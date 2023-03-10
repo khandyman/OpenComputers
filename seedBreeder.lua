@@ -1,9 +1,11 @@
 local robot = require 'robot'
 local component = require 'component'
-nav = component.navigation
+--local computer = require 'computer'
+local inventory = component.inventory_controller
+local nav = component.navigation
 
 ---------------------------------------------
--------coordination positions----------------
+----coordinate positions and variables-------
 ---------------------------------------------
 charger = {x = 358, y = 65, z = 357}
 analyzer = {x = 358, y = 65, z = 358}
@@ -12,6 +14,25 @@ cropWest = {x = 355, y = 65, z = 354}
 cropNorth = {x = 356, y = 65, z = 353}
 cropEast = {x = 357, y = 65, z = 354}
 cropCenter = {x = 356, y = 65, z = 354}
+
+local destination = charger
+local args = {...}
+
+if args[1] ~= nil then
+  if args[1] == "analyzer" then
+    destination = analyzer
+  elseif args[1] == "cropSouth" then
+    destination = cropSouth
+  elseif args[1] == "cropWest" then
+    destination = cropWest
+  elseif args[1] == "cropNorth" then
+    destination = cropNorth
+  elseif args[1] == "cropEast" then
+    destination = cropEast
+  elseif args[1] == "cropCenter" then
+    destination = cropCenter
+  end
+end
 
 
 ---------------------------------------------
@@ -45,25 +66,27 @@ function moveDirection(orientation, distance)
   end
 end
 
-function moveLocation(targetX, targetY, targetZ)
+function moveLocation(target)
   local distance = {}
+  local targetX = target.x
+  local targetY = target.y
+  local targetZ = target.z
   local currentX, currentY, currentZ = 
     nav.getPosition()
   
-  distance.x = targetX - currentX
-  distance.y = targetY - currentY
-  distance.z = targetZ - currentZ
+  distance.x = targetX - normalize(currentX)
+  distance.y = targetY - normalize(currentY)
+  distance.z = targetZ - normalize(currentZ)
   
   if distance.x > 0 then
-    direction("right", normalize(distance.x))
+    direction("right", distance.x)
   elseif distance.x < 0 then
-    direction("left", normalize(distance.x))
+    direction("left", math.abs(distance.x))
   end
   
   if distance.z > 0 then
-    direction("back", normalize(distance.z))
   elseif distance.z > 0 then
-    direction("forward", normalize(distance.z))
+    direction("forward", math.abs(distance.z))
   end
 end
 
@@ -71,15 +94,92 @@ function normalize(coord)
   if coord > 0 then
     coord = math.floor(coord)
   elseif coord < 0 then
-    coord = math.abs(math.ceil(coord))
+    coord = math.ceil(coord)
   end
   
   return coord
 end
 ---------------------------------------------
 
+
+---------------------------------------------
+-------inventory functions-------------------
+---------------------------------------------
+function checkSticks()
+  robot.select(2)
+  stackSize = count(2)
+  
+  print("Supply of crop sticks is at "..stackSize..".")
+  
+  return stackSize
+end
+  
+function count(slot)
+  stack = inventory.getStackInInternalSlot(slot)
+    
+  if stack ~= nil then
+    return stack.size
+  end
+  
+  return 0
+end
+
+function getSticks()
+
+end
+
+function dumpSeeds()
+  
+end
+
+function checkEnergy()
+  energy = computer.energy()
+  
+  if energy > 1000 then
+    print("Energy level is good. Reserves at "..
+        math.floor(energy)..".")
+    return true
+  end
+  
+  return false
+end
+---------------------------------------------
+
+
+---------------------------------------------
+--------breeding functions-------------------
+---------------------------------------------
+function breakCrop(target)
+  moveLocation(target)
+  robot.swingDown()
+end
+
+function plantSeed()
+
+end
+
+function placeSticks()
+  
+end
+
+function placeCross()
+  
+end
+
+function analyze()
+  
+end
+
+function compareSeeds()
+  
+end
+---------------------------------------------
+
+
 function main()
-  moveLocation(cropCenter)
+  checkEnergy()
+  checkSticks()
+  moveLocation(destination)
 end
 
 main()
