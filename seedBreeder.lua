@@ -2,16 +2,29 @@ local robot = require 'robot'
 local component = require 'component'
 nav = component.navigation
 
-moveBot = {}
+---------------------------------------------
+-------coordination positions----------------
+---------------------------------------------
+charger = {x = 358, y = 65, z = 357}
+analyzer = {x = 358, y = 65, z = 358}
+cropSouth = {x = 356, y = 65, z = 355}
+cropWest = {x = 355, y = 65, z = 354}
+cropNorth = {x = 356, y = 65, z = 353}
+cropEast = {x = 357, y = 65, z = 354}
+cropCenter = {x = 356, y = 65, z = 354}
 
-function moveBot.direction(orientation, distance)
+
+---------------------------------------------
+-------movement functions--------------------
+---------------------------------------------
+function moveDirection(orientation, distance)
   if orientation == "right" then
     robot.turnRight()
   elseif orientation == "left" then
     robot.turnLeft()
   end
   
-  for i = 1, dis do
+  for i = 1, distance do
     if orientation == "forward" or 
         orientation == "right" or
         orientation == "left" then
@@ -32,7 +45,7 @@ function moveBot.direction(orientation, distance)
   end
 end
 
-function moveBot.location(targetX, targetY, targetZ)
+function moveLocation(targetX, targetY, targetZ)
   local distance = {}
   local currentX, currentY, currentZ = 
     nav.getPosition()
@@ -54,7 +67,7 @@ function moveBot.location(targetX, targetY, targetZ)
   end
 end
 
-function moveBot.normalize(coord)
+function normalize(coord)
   if coord > 0 then
     coord = math.floor(coord)
   elseif coord < 0 then
@@ -63,5 +76,10 @@ function moveBot.normalize(coord)
   
   return coord
 end
+---------------------------------------------
 
-return moveBot
+function main()
+  moveLocation(cropCenter)
+end
+
+main()
