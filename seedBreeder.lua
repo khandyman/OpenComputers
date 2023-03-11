@@ -21,6 +21,8 @@ crops[3] = {x = 356, y = 65, z = 353} -- north
 crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
+seeds = {1 = 3, 2 = 3, 3 = 3, 4 = 3}
+
 slots = {rake = 1, sticks = 2, seeds = 3}
 
 
@@ -159,6 +161,13 @@ function getSticks()
   return false
 end
 
+function equipItem(slot)
+  robot.select(slot)
+  robot.transferTo(16,1)
+  robot.select(16)
+  inventory.equip()
+end
+
 function dumpSeeds()
   moveLocation(trash)
 
@@ -227,23 +236,62 @@ function plantCrop()
   return false
 end
 
-function plantSeeds()
-  for i = 1,4,1 do
-    moveLocation(crops[i])
-    placeSticks()
-    plantCrop()
+function analyzeSeed()
+  moveLocation(analyzer)
+  robot.select(slots.seeds)
+  robot.dropDown()
+  os.sleep(3)
+  robot.suckDown()
+
+  if compareItems(agricraft:crops, slots.seeds)
+    seed = inventory.getStackInInternalSlot(slots.seeds)
+    strength = seed.strength
+    growth = seed.growth
+    yield = seed.yield
+    seedLevel = strength + growth + yield
+
+    return seedLevel
+  else
+    return 0
+  end
+end
+
+function compareSeeds()
+  inventorySeed = analyzeSeed()
+  lowestSeedLevel = -1
+  lowestSeedNum = -1
+  
+  for i = 1,3,1 do
+    if seeds[i] < seeds[i + 1] then
+      lowestSeedLevel = seeds[i]
+      lowestSeedNum = i
+    else
+      lowestSeedLevel = seeds[i + 1]
+      lowestSeedNum = i + 1
+    end
+  end
+  
+  if lowestSeedLevel < inventorySeed then
+    return lowestSeedNum
+  else
+    return -1
   end
 end
 
 function replaceSeeds()
-
-end
-
-function equipItem(slot)
-  robot.select(slot)
-  robot.transferTo(16,1)
-  robot.select(16)
-  inventory.equip()
+    target = compareSeeds()
+  
+    if target ~= -1 then
+        moveLocation(crops.target)
+        robot.swingDown()
+        placeSticks()
+        
+        if plantCrop() then
+          return true
+        end
+    end
+    
+    return false
 end
 
 function placeSticks()
@@ -281,28 +329,18 @@ function analyzeBlock()
   end
 end
 
-function analyzeSeed()
+function plantStartingSeeds()
   moveLocation(analyzer)
   robot.select(slots.seeds)
-  robot.dropDown()
-  os.sleep(3)
+  robot.drop(4)
+  os.sleep(2)
   robot.suckDown()
-
-  if compareItems(agricraft:crops, slots.seeds)
-    seed = inventory.getStackInInternalSlot(slots.seeds)
-    strength = seed.strength
-    growth = seed.growth
-    yield = seed.yield
-    seedLevel = strength + growth + yield
-
-    return seedLevel
-  else
-    return 0
-  end
-end
-
-function compareSeeds()
   
+  for i = 1,4,1 do
+    moveLocation(crops[i])
+    placeSticks()
+    plantCrop()
+  end
 end
 ---------------------------------------------
 
