@@ -9,11 +9,17 @@ local nav = component.navigation
 ---------------------------------------------
 charger = {x = 358, y = 65, z = 357}
 analyzer = {x = 358, y = 65, z = 358}
+trash = {x = 358, y = 65, z = 356}
+stickStorage = {x = 358, y = 65, z = 359}
+seedStorage = {x = 358, y = 65, z = 360}
 cropSouth = {x = 356, y = 65, z = 355}
 cropWest = {x = 355, y = 65, z = 354}
 cropNorth = {x = 356, y = 65, z = 353}
 cropEast = {x = 357, y = 65, z = 354}
 cropCenter = {x = 356, y = 65, z = 354}
+
+slots = {rake = 1, sticks = 2, seeds = 3}
+
 
 local destination = charger
 local args = {...}
@@ -106,8 +112,8 @@ end
 -------inventory functions-------------------
 ---------------------------------------------
 function checkSticks()
-  robot.select(2)
-  stackSize = count(2)
+  robot.select(slots.sticks)
+  stackSize = count(slots.sticks)
   
   print("Supply of crop sticks is at "..stackSize..".")
   
@@ -125,7 +131,9 @@ function count(slot)
 end
 
 function getSticks()
-
+  moveLocation(stickStorage)
+  robot.select(slots.sticks)
+  robot.SuckDown()
 end
 
 function dumpSeeds()
