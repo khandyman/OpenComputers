@@ -13,6 +13,7 @@ analyzer = {x = 358, y = 65, z = 358}
 trash = {x = 358, y = 65, z = 356}
 stickStorage = {x = 358, y = 65, z = 359}
 seedStorage = {x = 358, y = 65, z = 360}
+
 crops = {}
 crops[0] = {x = 356, y = 65, z = 355} --south
 crops[1] = {x = 355, y = 65, z = 354} --west
@@ -180,11 +181,15 @@ function replaceSeeds()
 end
 
 function placeSticks()
-  robot.select(slots.sticks)
-  
   if analyzeBlock() == "minecraft:air" then
     robot.select(slots.sticks)
+    
+    if robot.useDown() then
+      return true
+    end
   end
+
+  return false
 end
 
 function placeCross()
