@@ -3,6 +3,7 @@ local component = require 'component'
 --local computer = require 'computer'
 local inventory = component.inventory_controller
 local nav = component.navigation
+local geolyzer = component.geolyzer
 
 ---------------------------------------------
 ----coordinate positions and variables-------
@@ -12,11 +13,12 @@ analyzer = {x = 358, y = 65, z = 358}
 trash = {x = 358, y = 65, z = 356}
 stickStorage = {x = 358, y = 65, z = 359}
 seedStorage = {x = 358, y = 65, z = 360}
-cropSouth = {x = 356, y = 65, z = 355}
-cropWest = {x = 355, y = 65, z = 354}
-cropNorth = {x = 356, y = 65, z = 353}
-cropEast = {x = 357, y = 65, z = 354}
-cropCenter = {x = 356, y = 65, z = 354}
+crops = {}
+crops[0] = {x = 356, y = 65, z = 355} --south
+crops[1] = {x = 355, y = 65, z = 354} --west
+crops[2] = {x = 356, y = 65, z = 353} -- north
+crops[3] = {x = 357, y = 65, z = 354} --east
+crops[4] = {x = 356, y = 65, z = 354} --center
 
 slots = {rake = 1, sticks = 2, seeds = 3}
 
@@ -131,9 +133,16 @@ function count(slot)
 end
 
 function getSticks()
-  moveLocation(stickStorage)
-  robot.select(slots.sticks)
-  robot.SuckDown()
+  if checkSticks() < 16 then
+    moveLocation(stickStorage)
+    robot.select(slots.sticks)
+    
+    if robot.SuckDown(32) then
+      return true
+    end
+  end
+
+  return false
 end
 
 function dumpSeeds()
@@ -162,19 +171,41 @@ function breakCrop(target)
   robot.swingDown()
 end
 
-function plantSeed()
+function plantSeeds()
+  
+end
+
+function replaceSeeds()
 
 end
 
 function placeSticks()
+  robot.select(slots.sticks)
   
+  if analyzeBlock() == "minecraft:air" then
+    robot.select(slots.sticks)
+  end
 end
 
 function placeCross()
-  
+  if analyzeBlock() == "agricraft:crop_sticks" then
+    robot.select(slots.sticks)
+    robot.useDown()
+  end
 end
 
-function analyze()
+function analyzeBlock()
+  scan = geolyzer.analyze(sides.down)
+
+  if scan ~= nil then
+    name = scan.name
+    return name
+  else
+    return ""
+  end
+end
+
+function analyzeSeed()
   
 end
 
