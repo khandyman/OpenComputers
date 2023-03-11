@@ -12,14 +12,14 @@ charger = {x = 358, y = 65, z = 357}
 analyzer = {x = 358, y = 65, z = 358}
 trash = {x = 358, y = 65, z = 356}
 stickStorage = {x = 358, y = 65, z = 359}
-seedStorage = {x = 358, y = 65, z = 360}
+cropStorage = {x = 358, y = 65, z = 360}
 
 crops = {}
-crops[0] = {x = 356, y = 65, z = 355} --south
-crops[1] = {x = 355, y = 65, z = 354} --west
-crops[2] = {x = 356, y = 65, z = 353} -- north
-crops[3] = {x = 357, y = 65, z = 354} --east
-crops[4] = {x = 356, y = 65, z = 354} --center
+crops[1] = {x = 356, y = 65, z = 355} --south
+crops[2] = {x = 355, y = 65, z = 354} --west
+crops[3] = {x = 356, y = 65, z = 353} -- north
+crops[4] = {x = 357, y = 65, z = 354} --east
+crops[5] = {x = 356, y = 65, z = 354} --center
 
 slots = {rake = 1, sticks = 2, seeds = 3}
 
@@ -133,6 +133,19 @@ function count(slot)
   return 0
 end
 
+function compareItems(itemName, slot)
+  stackName = inventory.
+    getStackInInternalSlot(slot).name
+
+  if stackName ~= nil then
+    if itemName == stackName then
+      return true
+    end
+  end
+
+  return false
+end
+
 function getSticks()
   if checkSticks() < 16 then
     moveLocation(stickStorage)
@@ -147,19 +160,49 @@ function getSticks()
 end
 
 function dumpSeeds()
-  
+  moveLocation(trash)
+
+  for i = 3,16,1 do
+    if compareItems(agricraft:crops, i) then
+      robot.select(i)
+      dropDown()
+    end
+  end
 end
 
-function checkEnergy()
+function storeCrops()
+  moveLocation(cropStorage)
+
+  for i = 3,16,1 do
+    if not compareItems(agricraft:crops, i) then
+      robot.select(i)
+      dropDown()
+    end
+  end
+end
+
+function lowEnergy()
   energy = computer.energy()
   
-  if energy > 1000 then
+  if energy < 1000 then
+    return true
+  else
     print("Energy level is good. Reserves at "..
         math.floor(energy)..".")
-    return true
+    return false
   end
-  
-  return false
+end
+
+function getEnergy()
+  moveLocation(charger)
+
+  repeat
+    os.sleep(5)
+    energy = computer.energy()
+  until (energy > 20000)
+
+  print("Energy is full. Reserves at "..
+    math.floor(energy)..".")
 end
 ---------------------------------------------
 
@@ -172,18 +215,41 @@ function breakCrop(target)
   robot.swingDown()
 end
 
+function plantCrop()
+  if analyzeBlock(agricraft:crop_sticks) then
+    equipItem(slots.seeds)
+
+    if robot.useDown() then
+      return true
+    end
+  end
+
+  return false
+end
+
 function plantSeeds()
-  
+  for i = 1,4,1 do
+    moveLocation(crops[i])
+    placeSticks()
+    plantCrop()
+  end
 end
 
 function replaceSeeds()
 
 end
 
+function equipItem(slot)
+  robot.select(slot)
+  robot.transferTo(16,1)
+  robot.select(16)
+  inventory.equip()
+end
+
 function placeSticks()
   if analyzeBlock() == "minecraft:air" then
-    robot.select(slots.sticks)
-    
+    equipItem(slots.sticks)
+
     if robot.useDown() then
       return true
     end
@@ -194,9 +260,14 @@ end
 
 function placeCross()
   if analyzeBlock() == "agricraft:crop_sticks" then
-    robot.select(slots.sticks)
-    robot.useDown()
+    equipItem(slots.sticks)
+
+    if robot.useDown() then
+      return true
+    end
   end
+
+  return false
 end
 
 function analyzeBlock()
@@ -211,7 +282,23 @@ function analyzeBlock()
 end
 
 function analyzeSeed()
-  
+  moveLocation(analyzer)
+  robot.select(slots.seeds)
+  robot.dropDown()
+  os.sleep(3)
+  robot.suckDown()
+
+  if compareItems(agricraft:crops, slots.seeds)
+    seed = inventory.getStackInInternalSlot(slots.seeds)
+    strength = seed.strength
+    growth = seed.growth
+    yield = seed.yield
+    seedLevel = strength + growth + yield
+
+    return seedLevel
+  else
+    return 0
+  end
 end
 
 function compareSeeds()
