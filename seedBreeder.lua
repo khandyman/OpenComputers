@@ -424,7 +424,8 @@ function main()
   --getSticks()
   --moveLocation(destination)
   placeSticks()
-  placeCross()
+  --placeCross()
+  plantCrop()
 end
 
 main()
