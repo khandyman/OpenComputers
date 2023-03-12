@@ -42,6 +42,8 @@ if args[1] ~= nil then
     destination = stickStorage
   elseif args[1] == "cropStorage" then
     destination = cropStorage
+  elseif args[1] == "seedScan" then
+    destination = seedScan
   elseif args[1] == "cropSouth" then
     destination = crops[1]
   elseif args[1] == "cropWest" then
@@ -355,8 +357,8 @@ end
 function main()
   --lowEnergy()
   --getSticks()
+  moveLocation(destination)
   placeSticks()
-  --moveLocation(destination)
 end
 
 main()
