@@ -377,7 +377,7 @@ function waitForGrowth(scope)
     childGrown = false
   end
   
-  repeat
+  while (parentsGrown ~= true and childGrown ~= true) do
     if scope == all or 
         (scope == parent and parentsGrown == false) or 
         (scope == child and childGrown == false) then
@@ -386,7 +386,7 @@ function waitForGrowth(scope)
         
         if analyzeBlock().name == "AgriCraft:crops" then
           maturity = analyzeBlock().metadata
-
+print("crops["..crops[i].."] level is "..maturity)
           if i ~= 5 and maturity == 7 then
             parentsGrown = true
           elseif i ~= 5 and maturity ~= 7 then
@@ -402,9 +402,9 @@ function waitForGrowth(scope)
       end
     end
 
+    moveLocation(seedScan)
     os.sleep(20)
-  until (parentsGrown == true and
-    childGrown == true)
+  end
 end
 
 function plantStartingSeeds()
@@ -422,10 +422,11 @@ end
 function main()
   --lowEnergy()
   --getSticks()
-  --moveLocation(destination)
+  moveLocation(destination)
   placeSticks()
   --placeCross()
   plantCrop()
+  waitForGrowth(child)
 end
 
 main()
