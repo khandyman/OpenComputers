@@ -23,8 +23,12 @@ crops[3] = {x = 356, y = 65, z = 353} -- north
 crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
-seedLevels = {[1] = 3, [2] = 3, [3] = 3, [4] = 3}
-slots = {rake = 1, sticks = 2, crops = 3, seeds = 4}
+seedLevels = {[1] = 3, [2] = 3, [3] = 3, 
+  [4] = 3}
+seedGrowth = {[1] = 0, [2] = 0, [3] = 0, 
+  [4] = 0, [5] = 0}
+slots = {rake = 1, sticks = 2, crops = 3, 
+  seeds = 4}
 
 local destination = charger
 local args = {...}
@@ -353,7 +357,15 @@ function analyzeBlock()
 end
 
 function waitForGrowth()
-  
+  local parentsGrown = false
+  local childGrown = false
+
+  repeat
+    
+
+    os.sleep(20)
+  until (parentsGrown = true and
+    childGrown = true)
 end
 
 function plantStartingSeeds()
