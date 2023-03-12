@@ -235,7 +235,7 @@ function breakCrop(target)
 end
 
 function plantCrop()
-  if analyzeBlock("agricraft:crop_sticks") then
+  if analyzeBlock().name == "AgriCraft:cropsItem" then
     equipItem(slots.seeds)
 
     if robot.useDown() then
@@ -252,18 +252,17 @@ function analyzeSeed()
   robot.dropDown()
   os.sleep(4)
   robot.suckDown()
+  moveLocation(seedScan)
+  placeSticks()
+  plantCrop()
+  
+  seed = analyzeBlock()
+  strength = seed.strength
+  growth = seed.growth
+  gain = seed.gain
+  seedLevel = strength + growth + gain
 
-  if compareItems("agricraft:crops", slots.seeds) then
-    seed = inventory.getStackInInternalSlot(slots.seeds)
-    strength = seed.strength
-    growth = seed.growth
-    gain = seed.gain
-    seedLevel = strength + growth + gain
-
-    return seedLevel
-  else
-    return 0
-  end
+  return seedLevel
 end
 
 function compareSeeds()
@@ -331,12 +330,7 @@ end
 function analyzeBlock()
   scan = geolyzer.analyze(sides.down)
 
-  if scan ~= nil then
-    name = scan.name
-    return name
-  else
-    return ""
-  end
+  return scan
 end
 
 function plantStartingSeeds()
