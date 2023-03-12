@@ -321,7 +321,7 @@ function placeSticks()
 end
 
 function placeCross()
-  if analyzeBlock().name == "AgriCraft:cropsItem" then
+  if analyzeBlock().name == "AgriCraft:crops" then
     equipItem(slots.sticks)
 
     if robot.useDown() then
@@ -359,6 +359,7 @@ function main()
   --getSticks()
   --moveLocation(destination)
   placeSticks()
+  placeCross()
 end
 
 main()
