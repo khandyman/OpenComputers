@@ -403,8 +403,8 @@ function waitForGrowth(scope)
     end
 
     os.sleep(20)
-  until (parentsGrown = true and
-    childGrown = true)
+  until (parentsGrown == true and
+    childGrown == true)
 end
 
 function plantStartingSeeds()
