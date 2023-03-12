@@ -457,6 +457,7 @@ function main()
     print("Setting child spawn conditions.")
     -- initiate child growth
     getSticks()
+    moveLocation(crops[5])
     placeSticks()
     placeCross()
     waitForGrowth(child)
