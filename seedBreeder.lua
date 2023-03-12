@@ -163,7 +163,7 @@ function getSticks()
     moveLocation(stickStorage)
     robot.select(slots.sticks)
     
-    if robot.SuckDown(32) then
+    if robot.suckDown(32) then
       return true
     end
   end
