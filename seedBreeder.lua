@@ -23,6 +23,7 @@ crops[3] = {x = 356, y = 65, z = 353} -- north
 crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
+maxSeedLevel = 3
 seedLevels = {[1] = 3, [2] = 3, [3] = 3, 
   [4] = 3}
 seedGrowth = {[1] = 0, [2] = 0, [3] = 0, 
@@ -293,8 +294,16 @@ end
 function analyzeSeeds(quantity)
   moveLocation(analyzer)
   robot.select(slots.seeds)
-  robot.dropDown(quantity)
-  os.sleep(4)
+  
+  if robot.dropDown(quantity) then
+    os.sleep(4)
+  else
+    robot.select(slots.crops)
+    
+    if robot.dropDown(quantity) then
+      os.sleep(4)
+  end
+    
   robot.suckDown()
 
   if quantity == 1 then
@@ -332,6 +341,7 @@ function compareSeeds()
   end
   
   if lowestSeedLevel < inventorySeed then
+    maxSeedLevel = inventorySeed
     return lowestSeedNum
   else
     return -1
@@ -378,6 +388,10 @@ function waitForGrowth(scope)
   end
   
   while (parentsGrown ~= true and childGrown ~= true) do
+    if lowEnergy() then
+      getEnergy()
+    end
+    
     if scope == all or 
         (scope == parent and parentsGrown == false) or 
         (scope == child and childGrown == false) then
@@ -386,7 +400,7 @@ function waitForGrowth(scope)
         
         if analyzeBlock().name == "AgriCraft:crops" then
           maturity = analyzeBlock().metadata
---print("crops["..i.."] level is "..maturity)
+
           if i ~= 5 and maturity == 7 then
             parentsGrown = true
           elseif i ~= 5 and maturity ~= 7 then
@@ -405,6 +419,12 @@ function waitForGrowth(scope)
     moveLocation(seedScan)
     os.sleep(20)
   end
+  
+  if parentsGrown == true and childGrown == true then
+    return true
+  else
+    return false
+  end
 end
 
 function plantStartingSeeds()
@@ -415,18 +435,47 @@ function plantStartingSeeds()
     placeSticks()
     plantCrop()
   end
+  
+  moveLocation(seedScan)
 end
 ---------------------------------------------
 
 
 function main()
+  -- set starting crops
+  plantStartingSeeds()
+  waitForGrowth(parent)
+  
+  while maxSeedLevel ~= 30 do
+    if lowEnergy() then
+      getEnergy()
+    end
+    
+    -- initiate child growth
+    getSticks()
+    placeSticks()
+    placeCross()
+    waitForGrowth(child)
+    
+    -- scan new child
+    breakCrop(crops[5])
+    
+    if analyzeSeeds(1) == 30 then
+      break
+    else
+      replaceSeeds()
+    end
+    
+    waitForGrowth(parent)
+  end
+    
   --lowEnergy()
   --getSticks()
-  moveLocation(destination)
-  placeSticks()
+  --moveLocation(destination)
+  --placeSticks()
   --placeCross()
-  plantCrop()
-  waitForGrowth(child)
+  --plantCrop()
+  --waitForGrowth(child)
 end
 
 main()
