@@ -209,6 +209,21 @@ function storeCrops()
   end
 end
 
+function searchSeeds()
+  checkName = inventory.getStackInInternalSlot(15).name
+  
+  for i = 3,8,1 do
+    scanName = inventory.getStackInInternalSlot(i).name
+    
+    if scanName == checkName then
+      return "seed"
+    elseif scanName == "minecraft:tallgrass" or 
+        scanName == "minecraft:double_plant) then
+      return "grass"
+    end
+  end
+end
+
 function lowEnergy()
   energy = computer.energy()
   
@@ -271,6 +286,17 @@ function breakCrop(target)
   else
     return false
   end
+end
+
+function useRake()
+  equipItem(1)
+  robot.useDown()
+  
+  if searchSeeds() == "grass" then
+    dumpTrash()
+    return false
+  elseif searchSeeds() == "seed" then
+    return true
 end
 
 function plantCrop()
@@ -377,10 +403,7 @@ function waitForGrowth(scope)
   local parentsGrown
   local childGrown
 
-  if scope == all then
-    parentsGrown = false
-    childGrown = false
-  elseif scope == parent then
+  if scope == parent then
     parentsGrown = false
     childGrown = true
   elseif scope == child then
@@ -393,7 +416,7 @@ function waitForGrowth(scope)
       getEnergy()
     end
     
-    if scope == all or (scope == parent and parentsGrown == false) then
+    if scope == parent and parentsGrown == false then
       for i = 1,4,1 do
         moveLocation(crops[i])
         result = analyzeBlock()
@@ -411,15 +434,17 @@ function waitForGrowth(scope)
       end
     end
     
-    if scope == all or (scope == child and childGrown == false) then
+    if scope == child and childGrown == false then
       moveLocation(crops[5])
       result = analyzeBlock()
       
       if result.name == "AgriCraft:crops" then
         maturity = result.metadata
         
-        if maturity == 7 then
-          childGrown = true
+        if maturity ~= 0 then
+          if useRake() then
+            break
+          end
         end
       end
     end
