@@ -23,10 +23,8 @@ crops[3] = {x = 356, y = 65, z = 353} -- north
 crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
-seeds = {[1] = 3, [2] = 3, [3] = 3, [4] = 3}
-
-slots = {rake = 1, sticks = 2, seeds = 3}
-
+seedLevels = {[1] = 3, [2] = 3, [3] = 3, [4] = 3}
+slots = {rake = 1, sticks = 2, crops = 3, seeds = 4}
 
 local destination = charger
 local args = {...}
@@ -129,23 +127,14 @@ end
 ---------------------------------------------
 -------inventory functions-------------------
 ---------------------------------------------
-function checkSticks()
-  robot.select(slots.sticks)
-  stackSize = count(slots.sticks)
-  
-  print("Supply of crop sticks is at "..stackSize..".")
-  
-  return stackSize
-end
-  
 function count(slot)
   stack = inventory.getStackInInternalSlot(slot)
     
   if stack ~= nil then
     return stack.size
+  else
+    return 0
   end
-  
-  return 0
 end
 
 function compareItems(itemName, slot)
@@ -159,6 +148,15 @@ function compareItems(itemName, slot)
   end
 
   return false
+end
+
+function checkSticks()
+  robot.select(slots.sticks)
+  stackSize = count(slots.sticks)
+  
+  print("Supply of crop sticks is at "..stackSize..".")
+  
+  return stackSize
 end
 
 function getSticks()
@@ -175,31 +173,34 @@ function getSticks()
 end
 
 function equipItem(slot)
+  curSlot = robot.select()
   robot.select(slot)
   robot.transferTo(16,1)
   robot.select(16)
   inventory.equip()
+  robot.select(curSlot)
 end
 
 function dumpSeeds()
   moveLocation(trash)
 
-  for i = 3,16,1 do
-    if compareItems("agricraft:crops", i) then
-      robot.select(i)
-      dropDown()
-    end
+  robot.select(slots.seeds)
+
+  if robot.dropDown() then
+    return true
+  else
+    return false
   end
 end
 
 function storeCrops()
   moveLocation(cropStorage)
+  robot.select(slots.crops)
 
-  for i = 3,16,1 do
-    if not compareItems("agricraft:crops", i) then
-      robot.select(i)
-      dropDown()
-    end
+  if robot.dropDown() then
+    return true
+  else
+    return false
   end
 end
 
@@ -232,82 +233,6 @@ end
 ---------------------------------------------
 --------breeding functions-------------------
 ---------------------------------------------
-function breakCrop(target)
-  moveLocation(target)
-  robot.swingDown()
-end
-
-function plantCrop()
-  if analyzeBlock().name == "AgriCraft:cropsItem" then
-    equipItem(slots.seeds)
-
-    if robot.useDown() then
-      return true
-    end
-  end
-
-  return false
-end
-
-function analyzeSeed()
-  moveLocation(analyzer)
-  robot.select(slots.seeds)
-  robot.dropDown()
-  os.sleep(4)
-  robot.suckDown()
-  moveLocation(seedScan)
-  placeSticks()
-  plantCrop()
-  
-  seed = analyzeBlock()
-  strength = seed.strength
-  growth = seed.growth
-  gain = seed.gain
-  seedLevel = strength + growth + gain
-
-  robot.swingDown()
-  
-  return seedLevel
-end
-
-function compareSeeds()
-  inventorySeed = analyzeSeed()
-  lowestSeedLevel = -1
-  lowestSeedNum = -1
-  
-  for i = 1,3,1 do
-    if seeds[i] < seeds[i + 1] then
-      lowestSeedLevel = seeds[i]
-      lowestSeedNum = i
-    else
-      lowestSeedLevel = seeds[i + 1]
-      lowestSeedNum = i + 1
-    end
-  end
-  
-  if lowestSeedLevel < inventorySeed then
-    return lowestSeedNum
-  else
-    return -1
-  end
-end
-
-function replaceSeeds()
-    target = compareSeeds()
-  
-    if target ~= -1 then
-        moveLocation(crops.target)
-        robot.swingDown()
-        placeSticks()
-        
-        if plantCrop() then
-          return true
-        end
-    end
-    
-    return false
-end
-
 function placeSticks()
   if analyzeBlock().name == "minecraft:air" then
     equipItem(slots.sticks)
@@ -332,18 +257,107 @@ function placeCross()
   return false
 end
 
+function breakCrop(target)
+  moveLocation(target)
+  robot.select(slots.crops)
+  
+  if robot.swingDown() then
+    return true
+  else
+    return false
+  end
+end
+
+function plantCrop()
+  if analyzeBlock().name == "AgriCraft:crops" then
+    equipItem(slots.seeds)
+
+    if robot.useDown() then
+      return true
+    end
+  end
+
+  return false
+end
+
+function analyzeSeeds(quantity)
+  moveLocation(analyzer)
+  robot.select(slots.seeds)
+  robot.dropDown(quantity)
+  os.sleep(4)
+  robot.suckDown()
+
+  if quantity == 1 then
+    moveLocation(seedScan)
+    placeSticks()
+    plantCrop()
+  
+    seed = analyzeBlock()
+    strength = seed.strength
+    growth = seed.growth
+    gain = seed.gain
+    seedLevel = strength + growth + gain
+
+    if robot.swingDown() then
+      return seedLevel
+    else
+      return -1
+    end
+  end
+end
+
+function compareSeeds()
+  inventorySeed = analyzeSeeds(1)
+  lowestSeedLevel = -1
+  lowestSeedNum = -1
+  
+  for i = 1,3,1 do
+    if seedLevels[i] < seedLevelss[i + 1] then
+      lowestSeedLevel = seedLevels[i]
+      lowestSeedNum = i
+    else
+      lowestSeedLevel = seedLevels[i + 1]
+      lowestSeedNum = i + 1
+    end
+  end
+  
+  if lowestSeedLevel < inventorySeed then
+    return lowestSeedNum
+  else
+    return -1
+  end
+end
+
+function replaceSeeds()
+    target = compareSeeds()
+  
+    if target ~= -1 then
+        moveLocation(crops.target)
+        robot.swingDown()
+        
+        if placeSticks() and plantCrop() then
+          return true
+        end
+    else
+      storeCrops()
+      dumpSeeds()
+    end
+    
+    return false
+end
+
 function analyzeBlock()
   scan = geolyzer.analyze(sides.down)
 
   return scan
 end
 
+function waitForGrowth()
+  
+end
+
 function plantStartingSeeds()
-  moveLocation(analyzer)
-  robot.select(slots.seeds)
-  robot.drop(4)
-  os.sleep(2)
-  robot.suckDown()
+  analyzeSeeds(4)
   
   for i = 1,4,1 do
     moveLocation(crops[i])
