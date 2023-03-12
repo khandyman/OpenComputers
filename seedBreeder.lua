@@ -386,7 +386,7 @@ function waitForGrowth(scope)
         
         if analyzeBlock().name == "AgriCraft:crops" then
           maturity = analyzeBlock().metadata
-print("crops["..crops[i].."] level is "..maturity)
+--print("crops["..i.."] level is "..maturity)
           if i ~= 5 and maturity == 7 then
             parentsGrown = true
           elseif i ~= 5 and maturity ~= 7 then
