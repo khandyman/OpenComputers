@@ -258,7 +258,7 @@ function analyzeSeed()
     strength = seed.strength
     growth = seed.growth
     gain = seed.gain
-    seedLevel = strength + growth + gainprint(
+    seedLevel = strength + growth + gain
 
     return seedLevel
   else
