@@ -1,6 +1,7 @@
 local robot = require 'robot'
 local component = require 'component'
 local computer = require 'computer'
+local sides = require 'sides'
 local inventory = component.inventory_controller
 local nav = component.navigation
 local geolyzer = component.geolyzer
@@ -352,9 +353,10 @@ end
 
 
 function main()
-  lowEnergy()
-  getSticks()
-  moveLocation(destination)
+  --lowEnergy()
+  --getSticks()
+  placeSticks()
+  --moveLocation(destination)
 end
 
 main()
