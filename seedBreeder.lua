@@ -302,6 +302,7 @@ function analyzeSeeds(quantity)
     
     if robot.dropDown(quantity) then
       os.sleep(4)
+    end
   end
     
   robot.suckDown()
