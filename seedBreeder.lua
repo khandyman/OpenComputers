@@ -13,6 +13,7 @@ analyzer = {x = 358, y = 65, z = 360}
 trash = {x = 358, y = 65, z = 364}
 stickStorage = {x = 358, y = 65, z = 363}
 cropStorage = {x = 358, y = 65, z = 362}
+seedScan = {x = 354, y = 65, z = 356}
 
 crops = {}
 crops[1] = {x = 356, y = 65, z = 355} --south
@@ -256,8 +257,8 @@ function analyzeSeed()
     seed = inventory.getStackInInternalSlot(slots.seeds)
     strength = seed.strength
     growth = seed.growth
-    yield = seed.yield
-    seedLevel = strength + growth + yield
+    gain = seed.gain
+    seedLevel = strength + growth + gainprint(
 
     return seedLevel
   else
@@ -356,7 +357,7 @@ end
 
 function main()
   lowEnergy()
-  checkSticks()
+  getSticks()
   moveLocation(destination)
 end
 
