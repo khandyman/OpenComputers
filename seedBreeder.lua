@@ -278,6 +278,12 @@ function plantCrop()
 
     if robot.useDown() then
       return true
+    else
+      robot.swingDown()
+      
+      if robot.useDown() then
+        return true
+      end
     end
   end
 
@@ -356,12 +362,45 @@ function analyzeBlock()
   return scan
 end
 
-function waitForGrowth()
-  local parentsGrown = false
-  local childGrown = false
+function waitForGrowth(scope)
+  local parentsGrown
+  local childGrown
 
+  if scope == all then
+    parentsGrown = false
+    childGrown = false
+  elseif scope == parent then
+    parentsGrown = false
+    childGrown = true
+  elseif scope == child then
+    parentsGrown = true
+    childGrown = false
+  end
+  
   repeat
-    
+    if scope == all or 
+        (scope == parent and parentsGrown == false) or 
+        (scope == child and childGrown == false) then
+      for i = 1,5,1 do
+        moveLocation(crops[i])
+        
+        if analyzeBlock().name == "AgriCraft:crops" then
+          maturity = analyzeBlock().metadata
+
+          if i ~= 5 and maturity == 7 then
+            parentsGrown = true
+          elseif i ~= 5 and maturity ~= 7 then
+            parentsGrown = false
+            break
+          elseif i == 5 and maturity == 7 then
+            childGrown = true
+          elseif i == 5 and maturity ~= 7 then
+            childGrown = false
+            break
+          end
+        end
+      end
+    end
 
     os.sleep(20)
   until (parentsGrown = true and
