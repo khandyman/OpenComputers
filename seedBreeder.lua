@@ -302,9 +302,9 @@ end
 
 function plantCrop()
   if analyzeBlock().name == "AgriCraft:crops" then
-    if compareItem(slots.seeds) then
+    if compareItems(slots.seeds) then
       equipItem(slots.seeds)
-    elseif compareItem(slots.crops) then
+    elseif compareItems(slots.crops) then
       equipItem(slots.crops)
     end
 
@@ -445,7 +445,7 @@ function waitForGrowth(scope)
       
       if result.name == "AgriCraft:crops" then
         maturity = result.metadata
-        
+ print("child maturity level is "..maturity)
         if maturity ~= 0 then
           if useRake() then
             break
