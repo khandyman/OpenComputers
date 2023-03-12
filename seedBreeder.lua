@@ -309,7 +309,7 @@ function replaceSeeds()
 end
 
 function placeSticks()
-  if analyzeBlock() == "minecraft:air" then
+  if analyzeBlock().name == "minecraft:air" then
     equipItem(slots.sticks)
 
     if robot.useDown() then
@@ -321,7 +321,7 @@ function placeSticks()
 end
 
 function placeCross()
-  if analyzeBlock() == "agricraft:crop_sticks" then
+  if analyzeBlock().name == "AgriCraft:cropsItem" then
     equipItem(slots.sticks)
 
     if robot.useDown() then
@@ -357,7 +357,7 @@ end
 function main()
   --lowEnergy()
   --getSticks()
-  moveLocation(destination)
+  --moveLocation(destination)
   placeSticks()
 end
 
