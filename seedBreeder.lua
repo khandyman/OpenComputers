@@ -142,12 +142,14 @@ function count(slot)
   end
 end
 
-function compareItems(itemName, slot)
+function compareItems(slot)
+  checkName = inventory.
+    getStackInInternalSlot(15).name
   stackName = inventory.
     getStackInInternalSlot(slot).name
 
   if stackName ~= nil then
-    if itemName == stackName then
+    if checkName == stackName then
       return true
     end
   end
@@ -213,12 +215,10 @@ function searchSeeds()
   checkName = inventory.getStackInInternalSlot(15).name
   
   for i = 3,8,1 do
-    scanName = inventory.getStackInInternalSlot(i).name
-    
-    if scanName == checkName then
+    if compareItems(i) then
       return "seed"
     elseif scanName == "minecraft:tallgrass" or 
-        scanName == "minecraft:double_plant) then
+        scanName == "minecraft:double_plant" then
       return "grass"
     end
   end
@@ -297,11 +297,16 @@ function useRake()
     return false
   elseif searchSeeds() == "seed" then
     return true
+  end
 end
 
 function plantCrop()
   if analyzeBlock().name == "AgriCraft:crops" then
-    equipItem(slots.seeds)
+    if compareItem(slots.seeds) then
+      equipItem(slots.seeds)
+    elseif compareItem(slots.crops) then
+      equipItem(slots.crops)
+    end
 
     if robot.useDown() then
       return true
@@ -411,7 +416,7 @@ function waitForGrowth(scope)
     childGrown = false
   end
   
-  while (parentsGrown ~= true and childGrown ~= true) do
+  while (parentsGrown ~= true or childGrown ~= true) do
     if lowEnergy() then
       getEnergy()
     end
