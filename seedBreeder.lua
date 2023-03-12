@@ -393,30 +393,41 @@ function waitForGrowth(scope)
       getEnergy()
     end
     
-    if scope == all or 
-        (scope == parent and parentsGrown == false) or 
-        (scope == child and childGrown == false) then
-      for i = 1,5,1 do
+    if scope == all or (scope == parent and parentsGrown == false) then
+      for i = 1,4,1 do
         moveLocation(crops[i])
+        result = analyzeBlock()
         
-        if analyzeBlock().name == "AgriCraft:crops" then
-          maturity = analyzeBlock().metadata
+        if result.name == "AgriCraft:crops" then
+          maturity = result.metadata
 
-          if i ~= 5 and maturity == 7 then
+          if maturity == 7 then
             parentsGrown = true
-          elseif i ~= 5 and maturity ~= 7 then
+          else
             parentsGrown = false
-            break
-          elseif i == 5 and maturity == 7 then
-            childGrown = true
-          elseif i == 5 and maturity ~= 7 then
-            childGrown = false
             break
           end
         end
       end
     end
+    
+    if scope == all or (scope == child and childGrown == false) then
+      moveLocation(crops[5])
+      result = analyzeBlock()
+      
+      if result.name == "AgriCraft:crops" then
+        maturity = result.metadata
+        
+        if maturity == 7 then
+          childGrown = true
+        end
+      end
+    end
 
+    if parentsGrown == true and childGrown == true then
+      break
+    end
+    
     moveLocation(seedScan)
     os.sleep(20)
   end
