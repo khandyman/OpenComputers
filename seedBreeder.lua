@@ -262,6 +262,8 @@ function analyzeSeed()
   gain = seed.gain
   seedLevel = strength + growth + gain
 
+  robot.swingDown()
+  
   return seedLevel
 end
 
