@@ -443,14 +443,17 @@ end
 
 function main()
   -- set starting crops
+  print("seedBreeder starting. Setting initial crop positions.")
   plantStartingSeeds()
   waitForGrowth(parent)
   
+  print("Starting Positions set. Entering main loop")
   while maxSeedLevel ~= 30 do
     if lowEnergy() then
       getEnergy()
     end
     
+    print("Setting child spawn conditions.")
     -- initiate child growth
     getSticks()
     placeSticks()
@@ -458,11 +461,15 @@ function main()
     waitForGrowth(child)
     
     -- scan new child
+    print("Child crop grown. Scanning for seed level.")
     breakCrop(crops[5])
     
     if analyzeSeeds(1) == 30 then
+      print("Maximum seed level reached. Exiting program.")
+      moveLocation(charger)
       break
     else
+      print("Maximum seed level not reached. Replacing seeds.")
       replaceSeeds()
     end
     
