@@ -1,6 +1,6 @@
 local robot = require 'robot'
 local component = require 'component'
---local computer = require 'computer'
+local computer = require 'computer'
 local inventory = component.inventory_controller
 local nav = component.navigation
 local geolyzer = component.geolyzer
@@ -9,10 +9,10 @@ local geolyzer = component.geolyzer
 ----coordinate positions and variables-------
 ---------------------------------------------
 charger = {x = 358, y = 65, z = 357}
-analyzer = {x = 358, y = 65, z = 358}
-trash = {x = 358, y = 65, z = 356}
-stickStorage = {x = 358, y = 65, z = 359}
-cropStorage = {x = 358, y = 65, z = 360}
+analyzer = {x = 358, y = 65, z = 360}
+trash = {x = 358, y = 65, z = 364}
+stickStorage = {x = 358, y = 65, z = 363}
+cropStorage = {x = 358, y = 65, z = 362}
 
 crops = {}
 crops[1] = {x = 356, y = 65, z = 355} --south
@@ -21,7 +21,7 @@ crops[3] = {x = 356, y = 65, z = 353} -- north
 crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
-seeds = {1 = 3, 2 = 3, 3 = 3, 4 = 3}
+seeds = {[1] = 3, [2] = 3, [3] = 3, [4] = 3}
 
 slots = {rake = 1, sticks = 2, seeds = 3}
 
@@ -32,16 +32,24 @@ local args = {...}
 if args[1] ~= nil then
   if args[1] == "analyzer" then
     destination = analyzer
+  elseif args[1] == "charger" then
+    destination = charger
+  elseif args[1] == "trash" then
+    destination = trash
+  elseif args[1] == "stickStorage" then
+    destination = stickStorage
+  elseif args[1] == "cropStorage" then
+    destination = cropStorage
   elseif args[1] == "cropSouth" then
-    destination = cropSouth
+    destination = crops[1]
   elseif args[1] == "cropWest" then
-    destination = cropWest
+    destination = crops[2]
   elseif args[1] == "cropNorth" then
-    destination = cropNorth
+    destination = crops[3]
   elseif args[1] == "cropEast" then
-    destination = cropEast
+    destination = crops[4]
   elseif args[1] == "cropCenter" then
-    destination = cropCenter
+    destination = crops[5]
   end
 end
 
@@ -90,14 +98,15 @@ function moveLocation(target)
   distance.z = targetZ - normalize(currentZ)
   
   if distance.x > 0 then
-    direction("right", distance.x)
+    moveDirection("right", distance.x)
   elseif distance.x < 0 then
-    direction("left", math.abs(distance.x))
+    moveDirection("left", math.abs(distance.x))
   end
   
   if distance.z > 0 then
-  elseif distance.z > 0 then
-    direction("forward", math.abs(distance.z))
+    moveDirection("back", distance.z)
+  elseif distance.z < 0 then
+    moveDirection("forward", math.abs(distance.z))
   end
 end
 
@@ -172,7 +181,7 @@ function dumpSeeds()
   moveLocation(trash)
 
   for i = 3,16,1 do
-    if compareItems(agricraft:crops, i) then
+    if compareItems("agricraft:crops", i) then
       robot.select(i)
       dropDown()
     end
@@ -183,7 +192,7 @@ function storeCrops()
   moveLocation(cropStorage)
 
   for i = 3,16,1 do
-    if not compareItems(agricraft:crops, i) then
+    if not compareItems("agricraft:crops", i) then
       robot.select(i)
       dropDown()
     end
@@ -225,7 +234,7 @@ function breakCrop(target)
 end
 
 function plantCrop()
-  if analyzeBlock(agricraft:crop_sticks) then
+  if analyzeBlock("agricraft:crop_sticks") then
     equipItem(slots.seeds)
 
     if robot.useDown() then
@@ -240,10 +249,10 @@ function analyzeSeed()
   moveLocation(analyzer)
   robot.select(slots.seeds)
   robot.dropDown()
-  os.sleep(3)
+  os.sleep(4)
   robot.suckDown()
 
-  if compareItems(agricraft:crops, slots.seeds)
+  if compareItems("agricraft:crops", slots.seeds) then
     seed = inventory.getStackInInternalSlot(slots.seeds)
     strength = seed.strength
     growth = seed.growth
@@ -346,7 +355,7 @@ end
 
 
 function main()
-  checkEnergy()
+  lowEnergy()
   checkSticks()
   moveLocation(destination)
 end
