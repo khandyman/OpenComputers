@@ -194,6 +194,7 @@ function lowSticks()
     return true
   else
     return false
+  end
 end
 ---------------------------------------------
 
@@ -474,6 +475,7 @@ function compareSeeds(newSeed)
     if seedLevels[i] <= minSeedLevel then
       minSeedLevel = seedLevels[i]
       lowestSeedNum = i
+    end
   end
 
   if newSeed > maxSeedLevel then
