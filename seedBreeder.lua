@@ -193,7 +193,7 @@ function equipItem(slot)
   robot.select(curSlot)
 end
 
-function dumpSeeds()
+function dumpTrash()
   moveLocation(trash)
 
   robot.select(slots.seeds)
