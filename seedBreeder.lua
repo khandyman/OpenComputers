@@ -418,12 +418,15 @@ print("entering setLevels")
     
     seedLevels[i] = scan.level
     seedGrowth[i] = scan.maturity
-    
+print("seedLevels["..i.."] = "..scan.level.. 
+  " and seedGrowth["..i.."] = "..scan.maturity)
     if scan.level > maxSeedLevel then
+print("maxSeedLevel is "..maxSeedLevel)
       maxSeedLevel = scan.level
     end
     
     if scan.level < minSeedLevel then
+print(minSeedLevel is "..minSeedLevel)
       minSeedLevel = scan.level
     end
   end
@@ -531,19 +534,22 @@ print("entering waitForGrowth "..scope)
     parentsGrown = true
     childGrown = false
   end
-  
+
   while (parentsGrown ~= true or childGrown ~= true) do
-    if lowEnergy() then
+print("entering waitForGrowth loop")
+      if lowEnergy() then
       getEnergy()
     end
 
     if scope == "parent" and parentsGrown == false then
       for i = 1,4,1 do
+print("entering parent growth loop")
         if seedGrowth[i] < 7 then
           moveLocation(crops[i])
           result = calculateLevels()
         
           if result.name == "AgriCraft:crops" then
+print("crop["..i.."] maturity = "..result.maturity)
             if result.maturity == 7 then
               parentsGrown = true
               seedLevels[i] = result.level
