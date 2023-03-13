@@ -536,14 +536,6 @@ function main()
     
     waitForGrowth("parent")
   end
-    
-  --lowEnergy()
-  --getSticks()
-  --moveLocation(destination)
-  --placeSticks()
-  --placeCross()
-  --plantCrop()
-  --waitForGrowth(child)
 end
 
 main()
