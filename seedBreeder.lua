@@ -426,7 +426,7 @@ print("maxSeedLevel is "..maxSeedLevel)
     end
     
     if scan.level < minSeedLevel then
-print(minSeedLevel is "..minSeedLevel)
+print("minSeedLevel is "..minSeedLevel)
       minSeedLevel = scan.level
     end
   end
