@@ -143,6 +143,8 @@ function count(slot)
 end
 
 function compareItems(slot)
+  local itemName = ""
+  
   checkName = inventory.
     getStackInInternalSlot(15).name
   
