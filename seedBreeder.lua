@@ -184,24 +184,25 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
-function checkSticks()
+function lowSticks()
   robot.select(slots.sticks)
   local stackSize = count(slots.sticks)
   
-  print("Supply of crop sticks is at "..stackSize..".")
-  
-  return stackSize
+  if stackSize < 16 then
+    print("Supply of crop sticks is low. "..
+      "Currently at "..stackSize..".")
+    return true
+  else
+    return false
 end
 ---------------------------------------------
 
 ---------------------------------------------
 function getSticks()
-  if checkSticks() < 16 then
-    moveLocation(stickStorage)
-    robot.select(slots.sticks)
-    robot.suckDown(32)
-    robot.select(slots.crops)
-  end
+  moveLocation(stickStorage)
+  robot.select(slots.sticks)
+  robot.suckDown(32)
+  robot.select(slots.crops)
 end
 ---------------------------------------------
 
@@ -475,7 +476,7 @@ function compareSeeds(newSeed)
       lowestSeedNum = i
   end
 
-  if maxSeedLevel < newSeed then
+  if newSeed > maxSeedLevel then
     print("New max seed level of "..newSeed..
       " reached.")
     maxSeedLevel = newSeed
@@ -605,14 +606,16 @@ function main()
   if entryPoint == "start" then
     print("seedBreeder starting. Setting initial crop positions.")
     plantStartingSeeds()
-    waitForGrowth("parent")
   elseif entryPoint == "continue" then
+    print("seedBreeder resuming. Scanning current growth levels.")
     setLevels()
   else
     print("Please provide an entry point "..
       "(start or continue) as an argument.")
     return
   end
+      
+  waitForGrowth("parent")
   
   print("Starting Positions set. Entering main loop")
   while maxSeedLevel ~= 30 do
@@ -622,7 +625,10 @@ function main()
     
     print("Setting child spawn conditions.")
     -- initiate child growth
-    getSticks()
+    if lowSticks() then
+      getSticks()
+    end
+          
     moveLocation(crops[5])
     placeSticks()
     placeCross()
@@ -630,7 +636,6 @@ function main()
     
     -- scan new child
     print("Child crop grown. Scanning for seed level.")
-    --breakCrop(crops[5])
     
     newSeed = analyzeSeeds(1)
     
