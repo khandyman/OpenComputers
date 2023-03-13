@@ -145,7 +145,7 @@ end
 function compareItems(slot)
   local itemName = ""
   
-  checkName = inventory.
+  local checkName = inventory.
     getStackInInternalSlot(15).name
   
   if inventory.getStackInInternalSlot(slot) ~= nil then
@@ -155,11 +155,14 @@ function compareItems(slot)
 
   if itemName ~= nil then
     if checkName == itemName then
-      return true
+      return "seed"
+    elseif itemName == "minecraft:tallgrass" or
+        itemName == "minecraft:double_plant" then
+      return "grass"
+    else
+      return "crop"
     end
   end
-
-  return false
 end
 
 function checkSticks()
@@ -175,13 +178,9 @@ function getSticks()
   if checkSticks() < 16 then
     moveLocation(stickStorage)
     robot.select(slots.sticks)
-    
-    if robot.suckDown(32) then
-      return true
-    end
+    robot.suckDown(32)
+    robot.select(slots.crops)
   end
-
-  return false
 end
 
 function equipItem(slot)
@@ -196,28 +195,30 @@ end
 function dumpTrash()
   moveLocation(trash)
 
-  robot.select(slots.seeds)
-
-  if robot.dropDown() then
-    return true
-  else
-    return false
+  for i = 3,8,1 do
+    if compareItems(i) ~= "crop" then
+      robot.select(i)
+      robot.dropDown()
+    end
   end
+  
+  robot.select(slots.crops)
 end
 
 function storeCrops()
   moveLocation(cropStorage)
-  robot.select(slots.crops)
-
-  if robot.dropDown() then
-    return true
-  else
-    return false
+  
+  for i = 3,8,1 do
+    if compareItems(i) == "crop" then
+      robot.select(i)
+      robot.dropDown()
   end
+    
+  robot.select(slots.crops)
 end
 
 function searchSeeds()
-  checkName = inventory.getStackInInternalSlot(15).name
+  local checkName = inventory.getStackInInternalSlot(15).name
   
   for i = 3,8,1 do
     if compareItems(i) then
