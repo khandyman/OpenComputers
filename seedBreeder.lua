@@ -38,9 +38,9 @@ local args = {...}
 
 -- argument setup --
 if args[1] ~= nil then
-  if args[2] == "start" then
+  if args[1] == "start" then
     entryPoint = "start"
-  elseif args[2] == "continue" then
+  elseif args[1] == "continue" then
     entryPoint = "continue"
   end
 end
@@ -411,6 +411,7 @@ end
 
 ---------------------------------------------
 function setLevels()
+print("entering setLevels")
   for i = 1,4,1 do
     moveLocation(crops[i])
     local scan = calculateLevels()
@@ -518,6 +519,7 @@ end
 
 ---------------------------------------------
 function waitForGrowth(scope)
+print("entering waitForGrowth "..scope)
   local parentsGrown
   local childGrown
   local result
@@ -537,7 +539,7 @@ function waitForGrowth(scope)
 
     if scope == "parent" and parentsGrown == false then
       for i = 1,4,1 do
-        if seedGrowth[i] ~= 7 then
+        if seedGrowth[i] < 7 then
           moveLocation(crops[i])
           result = calculateLevels()
         
