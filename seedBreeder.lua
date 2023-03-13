@@ -355,6 +355,8 @@ function analyzeSeeds(quantity)
     gain = seed.gain
     seedLevel = strength + growth + gain
 
+    robot.select(slots.seeds)
+    
     if robot.swingDown() then
       return seedLevel
     else
