@@ -32,30 +32,39 @@ slots = {rake = 1, sticks = 2, crops = 3,
   seeds = 4}
 
 local destination = charger
+local entryPoint = ""
 local args = {...}
 
 if args[1] ~= nil then
-  if args[1] == "analyzer" then
+  if args[2] == "start" then
+    entryPoint = "start"
+  elseif args[2] == "continue" then
+    entryPoint = "continue"
+  end
+end
+
+if args[2] ~= nil then
+  if args[2] == "analyzer" then
     destination = analyzer
-  elseif args[1] == "charger" then
+  elseif args[2] == "charger" then
     destination = charger
-  elseif args[1] == "trash" then
+  elseif args[2] == "trash" then
     destination = trash
-  elseif args[1] == "stickStorage" then
+  elseif args[2] == "stickStorage" then
     destination = stickStorage
-  elseif args[1] == "cropStorage" then
+  elseif args[2] == "cropStorage" then
     destination = cropStorage
-  elseif args[1] == "seedScan" then
+  elseif args[2] == "seedScan" then
     destination = seedScan
-  elseif args[1] == "cropSouth" then
+  elseif args[2] == "cropSouth" then
     destination = crops[1]
-  elseif args[1] == "cropWest" then
+  elseif args[2] == "cropWest" then
     destination = crops[2]
-  elseif args[1] == "cropNorth" then
+  elseif args[2] == "cropNorth" then
     destination = crops[3]
-  elseif args[1] == "cropEast" then
+  elseif args[2] == "cropEast" then
     destination = crops[4]
-  elseif args[1] == "cropCenter" then
+  elseif args[2] == "cropCenter" then
     destination = crops[5]
   end
 end
@@ -338,6 +347,24 @@ function plantCrop()
   return false
 end
 
+function analyzeBlock()
+  scan = geolyzer.analyze(sides.down)
+
+  return scan
+end
+
+function setLevels()
+  for i = 1,4,1 do
+    moveLocation(crops[i])
+    scan = analyzeBlock()
+    seedLevels[i] = scan
+    
+    if scan > maxSeedLevel then
+      maxSeedLevel = scan
+    end
+  end
+end
+
 function analyzeSeeds(quantity)
   moveLocation(analyzer)
   robot.select(slots.seeds)
@@ -425,12 +452,6 @@ function replaceSeeds(newSeed)
     return false
 end
 
-function analyzeBlock()
-  scan = geolyzer.analyze(sides.down)
-
-  return scan
-end
-
 function waitForGrowth(scope)
   local parentsGrown
   local childGrown
@@ -511,10 +532,18 @@ end
 
 
 function main()
-  -- set starting crops
-  print("seedBreeder starting. Setting initial crop positions.")
-  plantStartingSeeds()
-  waitForGrowth("parent")
+  -- set entry point
+  if entryPoint == "start" then
+    print("seedBreeder starting. Setting initial crop positions.")
+    plantStartingSeeds()
+    waitForGrowth("parent")
+  elseif entryPoint == "continue" then
+    setLevels()
+  else
+    print("Please provide an entry point "..
+      "(start or continue) as an argument.")
+    return
+  end
   
   print("Starting Positions set. Entering main loop")
   while maxSeedLevel ~= 30 do
@@ -549,5 +578,4 @@ function main()
   end
 end
 
---main()
-useRake()
+main()
