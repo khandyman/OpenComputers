@@ -357,34 +357,42 @@ function analyzeSeeds(quantity)
   end
 end
 
-function compareSeeds()
-  inventorySeed = analyzeSeeds(1)
+function compareSeeds(newSeed)
   lowestSeedLevel = -1
   lowestSeedNum = -1
   
   for i = 1,3,1 do
-    if seedLevels[i] < seedLevelss[i + 1] then
+    if seedLevels[i] < seedLevels[i + 1] then
       lowestSeedLevel = seedLevels[i]
       lowestSeedNum = i
+      highestSeedLevel = seedLevels[i + 1]
     else
       lowestSeedLevel = seedLevels[i + 1]
       lowestSeedNum = i + 1
+      highestSeedLevel = seedLevels[i]
     end
   end
   
-  if lowestSeedLevel < inventorySeed then
-    maxSeedLevel = inventorySeed
+  if highestSeedLevel < newSeed then
+    print("New max seed level of "..newSeed..
+      " reached.")
+    maxSeedLevel = newSeed
+  end
+  
+  if lowestSeedLevel < newSeed then
+    seedLevels[lowestSeedNum] = newSeed
     return lowestSeedNum
   else
     return -1
   end
 end
 
-function replaceSeeds()
-    target = compareSeeds()
+function replaceSeeds(newSeed)
+    target = compareSeeds(newSeed)
   
     if target ~= -1 then
-        moveLocation(crops.target)
+        print("Crop position "..target.." being replaced.")
+        moveLocation(crops[target])
         robot.swingDown()
         
         if placeSticks() and plantCrop() then
@@ -408,10 +416,10 @@ function waitForGrowth(scope)
   local parentsGrown
   local childGrown
 
-  if scope == parent then
+  if scope == "parent" then
     parentsGrown = false
     childGrown = true
-  elseif scope == child then
+  elseif scope == "child" then
     parentsGrown = true
     childGrown = false
   end
@@ -420,8 +428,8 @@ function waitForGrowth(scope)
     if lowEnergy() then
       getEnergy()
     end
-    
-    if scope == parent and parentsGrown == false then
+
+    if scope == "parent" and parentsGrown == false then
       for i = 1,4,1 do
         moveLocation(crops[i])
         result = analyzeBlock()
@@ -439,13 +447,13 @@ function waitForGrowth(scope)
       end
     end
     
-    if scope == child and childGrown == false then
+    if scope == "child" and childGrown == false then
       moveLocation(crops[5])
       result = analyzeBlock()
       
       if result.name == "AgriCraft:crops" then
         maturity = result.metadata
- print("child maturity level is "..maturity)
+
         if maturity ~= 0 then
           if useRake() then
             break
@@ -487,7 +495,7 @@ function main()
   -- set starting crops
   print("seedBreeder starting. Setting initial crop positions.")
   plantStartingSeeds()
-  waitForGrowth(parent)
+  waitForGrowth("parent")
   
   print("Starting Positions set. Entering main loop")
   while maxSeedLevel ~= 30 do
@@ -501,22 +509,24 @@ function main()
     moveLocation(crops[5])
     placeSticks()
     placeCross()
-    waitForGrowth(child)
+    waitForGrowth("child")
     
     -- scan new child
     print("Child crop grown. Scanning for seed level.")
-    breakCrop(crops[5])
+    --breakCrop(crops[5])
     
-    if analyzeSeeds(1) == 30 then
+    newSeed = analyzeSeeds(1)
+    
+    if newSeed == 30 then
       print("Maximum seed level reached. Exiting program.")
       moveLocation(charger)
       break
     else
       print("Maximum seed level not reached. Replacing seeds.")
-      replaceSeeds()
+      replaceSeeds(newSeed)
     end
     
-    waitForGrowth(parent)
+    waitForGrowth("parent")
   end
     
   --lowEnergy()
