@@ -408,6 +408,7 @@ function replaceSeeds(newSeed)
         robot.swingDown()
         
         if placeSticks() and plantCrop() then
+          moveLocation(seedScan)
           return true
         end
     else
@@ -542,6 +543,4 @@ function main()
   end
 end
 
---main()
-newSeed = analyzeSeeds(1)
-target = compareSeeds(newSeed)
+main()
