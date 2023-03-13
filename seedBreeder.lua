@@ -305,22 +305,22 @@ function useRake()
     robot.select(1)
     inventory.equip()
     robot.select(3)
-    placeCross()
-  end
-  
-  if searchSeeds() == "grass" then
-    dumpTrash()
-    return false
-  elseif searchSeeds() == "seed" then
-    return true
+    
+    if searchSeeds() == "grass" then
+      placeCross()
+      dumpTrash()
+      return false
+    elseif searchSeeds() == "seed" then
+      return true
+    end
   end
 end
 
 function plantCrop()
   if analyzeBlock().name == "AgriCraft:crops" then
-    if compareItems(slots.seeds) then
+    if compareItems(slots.seeds) == "seed" then
       equipItem(slots.seeds)
-    elseif compareItems(slots.crops) then
+    elseif compareItems(slots.crops) == "seed" then
       equipItem(slots.crops)
     end
 
