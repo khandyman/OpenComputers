@@ -212,6 +212,7 @@ function storeCrops()
     if compareItems(i) == "crop" then
       robot.select(i)
       robot.dropDown()
+    end
   end
     
   robot.select(slots.crops)
@@ -221,10 +222,14 @@ function searchSeeds()
   local checkName = inventory.getStackInInternalSlot(15).name
   
   for i = 3,8,1 do
-    if compareItems(i) then
+    comparison = compareItems(i)
+    
+    if comparison == "seed" then
       return "seed"
-    else
+    elseif comparison == "grass" then
       return "grass"
+    else
+      return "crop"
     end
   end
 end
