@@ -145,11 +145,14 @@ end
 function compareItems(slot)
   checkName = inventory.
     getStackInInternalSlot(15).name
-  stackName = inventory.
-    getStackInInternalSlot(slot).name
+  
+  if inventory.getStackInInternalSlot(slot) ~= nil then
+    itemName = inventory.
+      getStackInInternalSlot(slot).name
+  end
 
-  if stackName ~= nil then
-    if checkName == stackName then
+  if itemName ~= nil then
+    if checkName == itemName then
       return true
     end
   end
