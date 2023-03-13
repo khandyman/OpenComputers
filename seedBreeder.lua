@@ -222,8 +222,7 @@ function searchSeeds()
   for i = 3,8,1 do
     if compareItems(i) then
       return "seed"
-    elseif scanName == "minecraft:tallgrass" or 
-        scanName == "minecraft:double_plant" then
+    else
       return "grass"
     end
   end
@@ -299,6 +298,7 @@ function useRake()
   if robot.useDown() then
     robot.select(1)
     inventory.equip()
+    robot.select(3)
     placeCross()
   end
   
@@ -543,4 +543,5 @@ function main()
   end
 end
 
-main()
+--main()
+useRake()
