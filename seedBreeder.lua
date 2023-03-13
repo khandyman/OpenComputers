@@ -379,15 +379,19 @@ function compareSeeds(newSeed)
       lowestSeedNum = i + 1
       highestSeedLevel = seedLevels[i]
     end
+print("lowestSeedNum = "..lowestSeedNum)
+print("lowestSeedLevel = "..lowestSeedLevel)
+print("highestSeedLevel = "..highestSeedLevel)
   end
-  
+print("newSeed = "..newSeed)
   if highestSeedLevel < newSeed then
     print("New max seed level of "..newSeed..
       " reached.")
     maxSeedLevel = newSeed
   end
-  
+
   if lowestSeedLevel < newSeed then
+print("seed to be replaced = "..lowestSeedNum)
     seedLevels[lowestSeedNum] = newSeed
     return lowestSeedNum
   else
@@ -538,4 +542,6 @@ function main()
   end
 end
 
-main()
+--main()
+newSeed = analyzeSeeds(1)
+target = compareSeeds(newSeed)
