@@ -6,9 +6,9 @@ local inventory = component.inventory_controller
 local nav = component.navigation
 local geolyzer = component.geolyzer
 
----------------------------------------------
-----coordinate positions and variables-------
----------------------------------------------
+--###########################################
+--## coordinate positions and variables #####
+--###########################################
 charger = {x = 358, y = 65, z = 357}
 analyzer = {x = 358, y = 65, z = 360}
 trash = {x = 358, y = 65, z = 364}
@@ -24,6 +24,7 @@ crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
 maxSeedLevel = 3
+minSeedLevel = 3
 seedLevels = {[1] = 3, [2] = 3, [3] = 3, 
   [4] = 3}
 seedGrowth = {[1] = 0, [2] = 0, [3] = 0, 
@@ -35,6 +36,7 @@ local destination = charger
 local entryPoint = ""
 local args = {...}
 
+-- argument setup --
 if args[1] ~= nil then
   if args[2] == "start" then
     entryPoint = "start"
@@ -70,9 +72,9 @@ if args[2] ~= nil then
 end
 
 
----------------------------------------------
--------movement functions--------------------
----------------------------------------------
+--###########################################
+--######### movement functions ##############
+--###########################################
 function moveDirection(orientation, distance)
   if orientation == "right" then
     robot.turnRight()
@@ -101,6 +103,7 @@ function moveDirection(orientation, distance)
   end
 end
 
+---------------------------------------------
 function moveLocation(target)
   local distance = {}
   local targetX = target.x
@@ -125,7 +128,9 @@ function moveLocation(target)
     moveDirection("forward", math.abs(distance.z))
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function normalize(coord)
   if coord > 0 then
     coord = math.floor(coord)
@@ -138,11 +143,12 @@ end
 ---------------------------------------------
 
 
----------------------------------------------
--------inventory functions-------------------
+--###########################################
+--######### inventory functions #############
+--###########################################
 ---------------------------------------------
 function count(slot)
-  stack = inventory.getStackInInternalSlot(slot)
+  local stack = inventory.getStackInInternalSlot(slot)
     
   if stack ~= nil then
     return stack.size
@@ -150,7 +156,9 @@ function count(slot)
     return 0
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function compareItems(slot)
   local itemName = ""
   
@@ -173,16 +181,20 @@ function compareItems(slot)
     end
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function checkSticks()
   robot.select(slots.sticks)
-  stackSize = count(slots.sticks)
+  local stackSize = count(slots.sticks)
   
   print("Supply of crop sticks is at "..stackSize..".")
   
   return stackSize
 end
+---------------------------------------------
 
+---------------------------------------------
 function getSticks()
   if checkSticks() < 16 then
     moveLocation(stickStorage)
@@ -191,7 +203,9 @@ function getSticks()
     robot.select(slots.crops)
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function equipItem(slot)
   curSlot = robot.select()
   robot.select(slot)
@@ -200,7 +214,9 @@ function equipItem(slot)
   inventory.equip()
   robot.select(curSlot)
 end
+---------------------------------------------
 
+---------------------------------------------
 function dumpTrash()
   moveLocation(trash)
 
@@ -213,7 +229,9 @@ function dumpTrash()
   
   robot.select(slots.crops)
 end
+---------------------------------------------
 
+---------------------------------------------
 function storeCrops()
   moveLocation(cropStorage)
   
@@ -226,12 +244,14 @@ function storeCrops()
     
   robot.select(slots.crops)
 end
+---------------------------------------------
 
+---------------------------------------------
 function searchSeeds()
   local checkName = inventory.getStackInInternalSlot(15).name
   
   for i = 3,8,1 do
-    comparison = compareItems(i)
+    local comparison = compareItems(i)
     
     if comparison == "seed" then
       return "seed"
@@ -242,9 +262,11 @@ function searchSeeds()
     end
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function lowEnergy()
-  energy = computer.energy()
+  local energy = computer.energy()
   
   if energy < 1000 then
     print("Energy level is low. Reserves at "..
@@ -254,13 +276,15 @@ function lowEnergy()
     return false
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function getEnergy()
   moveLocation(charger)
 
   repeat
     os.sleep(5)
-    energy = computer.energy()
+    local energy = computer.energy()
   until (energy > 20000)
 
   print("Energy is full. Reserves at "..
@@ -269,8 +293,9 @@ end
 ---------------------------------------------
 
 
----------------------------------------------
---------breeding functions-------------------
+--###########################################
+--########## breeding functions #############
+--###########################################
 ---------------------------------------------
 function placeSticks()
   if analyzeBlock().name == "minecraft:air" then
@@ -283,7 +308,9 @@ function placeSticks()
 
   return false
 end
+---------------------------------------------
 
+---------------------------------------------
 function placeCross()
   if analyzeBlock().name == "AgriCraft:crops" then
     equipItem(slots.sticks)
@@ -295,7 +322,9 @@ function placeCross()
 
   return false
 end
+---------------------------------------------
 
+---------------------------------------------
 function breakCrop(target)
   moveLocation(target)
   robot.select(slots.crops)
@@ -306,14 +335,16 @@ function breakCrop(target)
     return false
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function useRake()
   equipItem(1)
   
   if robot.useDown() then
-    robot.select(1)
+    robot.select(slots.rake)
     inventory.equip()
-    robot.select(3)
+    robot.select(slots.crops)
     
     if searchSeeds() == "grass" then
       placeCross()
@@ -324,7 +355,9 @@ function useRake()
     end
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function plantCrop()
   if analyzeBlock().name == "AgriCraft:crops" then
     if compareItems(slots.seeds) == "seed" then
@@ -346,25 +379,55 @@ function plantCrop()
 
   return false
 end
+---------------------------------------------
 
+---------------------------------------------
 function analyzeBlock()
-  scan = geolyzer.analyze(sides.down)
+  local scan = geolyzer.analyze(sides.down)
 
   return scan
 end
+---------------------------------------------
 
+---------------------------------------------
+function calculateLevels()
+  local seedScan, seedMaturity
+  local statStrength, statGrowth, statGain 
+  local scanResults = {level = 0, maturity = 0}
+  
+  seedScan = analyzeBlock()
+  statStrength = seed.strength
+  statGrowth = seed.growth
+  statGain = seed.gain
+  
+  scanResults.level = statStrength + statGrowth + statGain
+  scanResults.maturity = seedScan.metadata
+  
+  return scanResults
+end
+---------------------------------------------
+
+---------------------------------------------
 function setLevels()
   for i = 1,4,1 do
     moveLocation(crops[i])
-    scan = analyzeBlock()
-    seedLevels[i] = scan
+    local scan = calculateLevels()
     
-    if scan > maxSeedLevel then
-      maxSeedLevel = scan
+    seedLevels[i] = scan.level
+    seedGrowth[i] = scan.maturity
+    
+    if scan.level > maxSeedLevel then
+      maxSeedLevel = scan.level
+    end
+    
+    if scan.level < minSeedLevel then
+      minSeedLevel = scan.level
     end
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function analyzeSeeds(quantity)
   moveLocation(analyzer)
   robot.select(slots.seeds)
@@ -386,11 +449,7 @@ function analyzeSeeds(quantity)
     placeSticks()
     plantCrop()
   
-    seed = analyzeBlock()
-    strength = seed.strength
-    growth = seed.growth
-    gain = seed.gain
-    seedLevel = strength + growth + gain
+    local seedLevel = calculateLevels().level
 
     robot.select(slots.seeds)
     
@@ -401,37 +460,37 @@ function analyzeSeeds(quantity)
     end
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function compareSeeds(newSeed)
-  lowestSeedLevel = -1
-  lowestSeedNum = -1
+  local lowestSeedNum = -1
   
-  for i = 1,3,1 do
-    if seedLevels[i] < seedLevels[i + 1] then
-      lowestSeedLevel = seedLevels[i]
+  for i = 1,4,1 do
+    moveLocation(i)
+    local scan = calculateLevels()
+    
+    if seedLevels[i] <= minSeedLevel then
+      minSeedLevel = seedLevels[i]
       lowestSeedNum = i
-      highestSeedLevel = seedLevels[i + 1]
-    else
-      lowestSeedLevel = seedLevels[i + 1]
-      lowestSeedNum = i + 1
-      highestSeedLevel = seedLevels[i]
-    end
   end
 
-  if highestSeedLevel < newSeed then
+  if maxSeedLevel < newSeed then
     print("New max seed level of "..newSeed..
       " reached.")
     maxSeedLevel = newSeed
   end
 
-  if lowestSeedLevel < newSeed then
+  if minSeedLevel < newSeed then
     seedLevels[lowestSeedNum] = newSeed
     return lowestSeedNum
   else
     return -1
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function replaceSeeds(newSeed)
     target = compareSeeds(newSeed)
   
@@ -441,6 +500,7 @@ function replaceSeeds(newSeed)
         robot.swingDown()
         
         if placeSticks() and plantCrop() then
+          
           moveLocation(seedScan)
           return true
         end
@@ -451,10 +511,13 @@ function replaceSeeds(newSeed)
     
     return false
 end
+---------------------------------------------
 
+---------------------------------------------
 function waitForGrowth(scope)
   local parentsGrown
   local childGrown
+  local result
 
   if scope == "parent" then
     parentsGrown = false
@@ -471,17 +534,18 @@ function waitForGrowth(scope)
 
     if scope == "parent" and parentsGrown == false then
       for i = 1,4,1 do
-        moveLocation(crops[i])
-        result = analyzeBlock()
+        if seedGrowth[i] ~= 7 then
+          moveLocation(crops[i])
+          result = calculateLevels()
         
-        if result.name == "AgriCraft:crops" then
-          maturity = result.metadata
-
-          if maturity == 7 then
-            parentsGrown = true
-          else
-            parentsGrown = false
-            break
+          if result.name == "AgriCraft:crops" then
+            if result.maturity == 7 then
+              parentsGrown = true
+              seedLevels[i] = result.level
+              seedGrowth[i] = result.maturity
+            else
+              parentsGrown = false
+              break
           end
         end
       end
@@ -506,6 +570,9 @@ function waitForGrowth(scope)
       break
     end
     
+    dumpTrash()
+    storeCrops()
+        
     moveLocation(seedScan)
     os.sleep(20)
   end
@@ -516,7 +583,9 @@ function waitForGrowth(scope)
     return false
   end
 end
+---------------------------------------------
 
+---------------------------------------------
 function plantStartingSeeds()
   analyzeSeeds(4)
   
@@ -530,7 +599,7 @@ function plantStartingSeeds()
 end
 ---------------------------------------------
 
-
+---------------------------------------------
 function main()
   -- set entry point
   if entryPoint == "start" then
@@ -577,5 +646,6 @@ function main()
     waitForGrowth("parent")
   end
 end
+---------------------------------------------
 
 main()
