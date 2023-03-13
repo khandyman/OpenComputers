@@ -295,8 +295,12 @@ end
 
 function useRake()
   equipItem(1)
-  robot.useDown()
-  equipItem(1)
+  
+  if robot.useDown() then
+    robot.select(1)
+    inventory.equip()
+    placeCross()
+  end
   
   if searchSeeds() == "grass" then
     dumpTrash()
