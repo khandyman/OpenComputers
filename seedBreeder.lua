@@ -547,6 +547,7 @@ function waitForGrowth(scope)
             else
               parentsGrown = false
               break
+            end
           end
         end
       end
