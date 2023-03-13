@@ -294,6 +294,7 @@ end
 function useRake()
   equipItem(1)
   robot.useDown()
+  equipItem(1)
   
   if searchSeeds() == "grass" then
     dumpTrash()
