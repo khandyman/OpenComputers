@@ -238,10 +238,10 @@ function lowEnergy()
   energy = computer.energy()
   
   if energy < 1000 then
+    print("Energy level is low. Reserves at "..
+        math.floor(energy)..". Recharging.")
     return true
   else
-    print("Energy level is good. Reserves at "..
-        math.floor(energy)..".")
     return false
   end
 end
