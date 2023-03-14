@@ -578,8 +578,8 @@ print("crop["..i.."] maturity = "..result.maturity)
 
         if maturity ~= 0 then
           if useRake() then
-            dumpTrash()
-            dwstoreCrops()
+            --dumpTrash()
+            --storeCrops()
             break
           end
         end
@@ -662,6 +662,8 @@ function main()
     else
       print("Maximum seed level not reached. Replacing seeds.")
       replaceSeeds(newSeed)
+      dumpTrash()
+      storeCrops()
     end
     
     waitForGrowth("parent")
