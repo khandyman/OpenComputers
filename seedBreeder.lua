@@ -395,13 +395,15 @@ end
 function calculateLevels()
   local seedScan, seedMaturity
   local statStrength, statGrowth, statGain 
-  local scanResults = {level = 0, maturity = 0}
+  local scanResults = {name = "", level = 0, maturity = 0}
   
   seedScan = analyzeBlock()
   statStrength = seed.strength
   statGrowth = seed.growth
   statGain = seed.gain
-  
+print("current seed is "..statStrength..", "..
+    statGrowth..", "..statGain)
+  scanResults.name = seedScan.name
   scanResults.level = statStrength + statGrowth + statGain
   scanResults.maturity = seedScan.metadata
   
