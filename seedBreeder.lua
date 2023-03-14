@@ -1,3 +1,60 @@
+--[[
+This program uses OpenComputers to 
+automatically breed AgriCraft (for Minecraft 
+version 1.7.10) crops, with AgriCraft's hard 
+mode set in its config (i.e. 4 parents are 
+required to have a chance at increased stats 
+or mutations for children)
+
+The program should be run on an OC robot with
+the following components installed:
+  - at least a tier 2 case, and corresponding
+    basic hardware (i.e., cpu, memory, etc.)
+  - screen
+  - keyboard
+  - geolyzer
+  - navigation upgrade
+  - inventory upgrade
+  - inventory controller upgrade
+
+The following components are optional, but
+recommended:
+  - internet card (for downloading the code
+    to the robot)
+  - card container (for swapping cards on the fly)
+  - upgrade container (same, but for upgrades)
+
+Change the coordinate positions of the following
+tables to match your in-world locations:
+  - charger (an OC charger)
+  - analyzer (this is a regular AgriCraft analyzer)
+  - trash (any modded trash can)
+  - stickStorage (any inventory, to store crop sticks)
+  - cropStorage (any inventory, to store crop output)
+  - seedScan (any position near your breeding site, 
+    it's basically a rest position for the robot, and
+    also used to scan new seeds with the geolyzer)
+  - crops (5 adjacent blocks of farmland, in the 
+    shape of a plus sign, for the 4 parent crops
+    and the cross crop in the center for breeding)
+
+The following robot slots are used by the program:
+  - slot 1 (hand rake needs to be placed here)
+  - slot 2 (crop sticks will be pulled from 
+    stickStorage and placed here)
+  - slot 3 (crops obtained from harvesting will
+    be placed here)
+  - slot 4 (seeds obtained from harvesting will
+    be placed here)
+  - slot 13 (temp slot used for equipping single
+    items to the robot's tool belt)
+  - slot 15 (a sample crop output item should be
+    placed here by the player (e.g., wheat if 
+    breeding wheat seeds))
+  - slot 16 (a sample item of the seeds being bred
+    should be placed here by the player)
+--]]
+
 local robot = require 'robot'
 local component = require 'component'
 local computer = require 'computer'
@@ -161,9 +218,10 @@ end
 ---------------------------------------------
 function compareItems(slot)
   local itemName = ""
-  
-  local checkName = inventory.
-    getStackInInternalSlot(15).name
+  local seedName = inventory.
+    getStackInInternalSlot(16).name
+  local cropName = inventory.
+    getStackInInernalSlot(15).name
   
   if inventory.getStackInInternalSlot(slot) ~= nil then
     itemName = inventory.
@@ -171,12 +229,12 @@ function compareItems(slot)
   end
 
   if itemName ~= nil then
-    if checkName == itemName then
+    if seedName == itemName then
       return "seed"
     elseif itemName == "minecraft:tallgrass" or
         itemName == "minecraft:double_plant" then
       return "grass"
-    else
+    elseif itemName == cropName then
       return "crop"
     end
   end
@@ -211,8 +269,8 @@ end
 function equipItem(slot)
   curSlot = robot.select()
   robot.select(slot)
-  robot.transferTo(16,1)
-  robot.select(16)
+  robot.transferTo(13,1)
+  robot.select(13)
   inventory.equip()
   robot.select(curSlot)
 end
@@ -503,7 +561,6 @@ print("seedLevels[i] = "..seedLevels[i])
   end
 
   if minSeedLevel < newSeed then
-    seedLevels[lowestSeedNum] = newSeed
     return lowestSeedNum
   else
     return -1
@@ -521,6 +578,7 @@ function replaceSeeds(newSeed)
         robot.swingDown()
         
         if placeSticks() and plantCrop() then
+          seedLevels[target] = newSeed
           parentsGrown = false
           moveLocation(seedScan)
           return true
