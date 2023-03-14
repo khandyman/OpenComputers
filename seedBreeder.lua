@@ -411,23 +411,24 @@ end
 
 ---------------------------------------------
 function setLevels()
+  local scan = {}
 print("entering setLevels")
   for i = 1,4,1 do
     moveLocation(crops[i])
-    local scan = calculateLevels()
+    scan = calculateLevels()
     
     seedLevels[i] = scan.level
     seedGrowth[i] = scan.maturity
 print("seedLevels["..i.."] = "..scan.level.. 
   " and seedGrowth["..i.."] = "..scan.maturity)
     if scan.level > maxSeedLevel then
-print("maxSeedLevel is "..maxSeedLevel)
       maxSeedLevel = scan.level
+print("maxSeedLevel is "..maxSeedLevel)
     end
     
     if scan.level < minSeedLevel then
-print("minSeedLevel is "..minSeedLevel)
       minSeedLevel = scan.level
+print("minSeedLevel is "..minSeedLevel)
     end
   end
 end
