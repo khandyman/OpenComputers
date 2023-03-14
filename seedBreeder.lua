@@ -24,7 +24,7 @@ crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
 maxSeedLevel = 3
-minSeedLevel = 3
+parentsGrown = false
 seedLevels = {[1] = 3, [2] = 3, [3] = 3, 
   [4] = 3}
 seedGrowth = {[1] = 0, [2] = 0, [3] = 0, 
@@ -250,7 +250,7 @@ end
 
 ---------------------------------------------
 function searchSeeds()
-  local checkName = inventory.getStackInInternalSlot(15).name
+  --local checkName = inventory.getStackInInternalSlot(15).name
   
   for i = 3,8,1 do
     local comparison = compareItems(i)
@@ -413,6 +413,7 @@ end
 
 ---------------------------------------------
 function setLevels()
+  local minSeedLevel = 0
   local scan = {}
 print("entering setLevels")
   for i = 1,4,1 do
@@ -421,6 +422,12 @@ print("entering setLevels")
     
     seedLevels[i] = scan.level
     seedGrowth[i] = scan.maturity
+    
+    if seedGrowth[i] == 7 then
+      parentsGrown = true
+    else
+      parentsGrown = false
+    end
 print("seedLevels["..i.."] = "..scan.level.. 
   " and seedGrowth["..i.."] = "..scan.maturity)
     if scan.level > maxSeedLevel then
@@ -428,10 +435,10 @@ print("seedLevels["..i.."] = "..scan.level..
 print("maxSeedLevel is "..maxSeedLevel)
     end
     
-    if scan.level < minSeedLevel or minSeedLevel == 3 then
+--[[    if scan.level < minSeedLevel or minSeedLevel == 0 then
       minSeedLevel = scan.level
 print("minSeedLevel is "..minSeedLevel)
-    end
+    end--]]
   end
 end
 ---------------------------------------------
@@ -474,10 +481,11 @@ end
 ---------------------------------------------
 function compareSeeds(newSeed)
   local lowestSeedNum = -1
+  local minSeedLevel = 3
   local scan
   
   for i = 1,4,1 do
-    moveLocation(crops[i])
+    --moveLocation(crops[i])
     --scan = calculateLevels()
     
 print("minSeedLevel = "..minSeedLevel)
@@ -513,7 +521,7 @@ function replaceSeeds(newSeed)
         robot.swingDown()
         
         if placeSticks() and plantCrop() then
-          
+          parentsGrown = false
           moveLocation(seedScan)
           return true
         end
@@ -527,81 +535,69 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
-function waitForGrowth(scope)
-print("entering waitForGrowth "..scope)
-  local parentsGrown
-  local childGrown
-  local result
-
-  if scope == "parent" then
-    parentsGrown = false
-    childGrown = true
-  elseif scope == "child" then
-    parentsGrown = true
-    childGrown = false
+function waitForParents()
+  local result = {}
+  
+  if lowEnergy() then
+    getEnergy()
   end
 
-  while (parentsGrown ~= true or childGrown ~= true) do
-print("entering waitForGrowth loop")
-      if lowEnergy() then
-      getEnergy()
-    end
+  while parentsGrown == false do
+    for i = 1,4,1 do
+      if seedGrowth[i] <= 7 then
+        moveLocation(crops[i])
+        result = calculateLevels()
 
-    if scope == "parent" and parentsGrown == false then
-      for i = 1,4,1 do
-print("entering parent growth loop")
-        if seedGrowth[i] <= 7 then
-          moveLocation(crops[i])
-          result = calculateLevels()
-        
-          if result.name == "AgriCraft:crops" then
-print("crop["..i.."] maturity = "..result.maturity)
-            if result.maturity == 7 then
-              parentsGrown = true
-              seedLevels[i] = result.level
-              seedGrowth[i] = result.maturity
-            else
-              parentsGrown = false
-              break
-            end
-          end
-        end
-      end
-    end
-    
-    if scope == "child" and childGrown == false then
-      moveLocation(crops[5])
-      result = analyzeBlock()
-      
-      if result.name == "AgriCraft:crops" then
-        maturity = result.metadata
-
-        if maturity ~= 0 then
-          if useRake() then
-            --dumpTrash()
-            --storeCrops()
+        if result.name == "AgriCraft:crops" then
+          seedLevels[i] = result.level
+          seedGrowth[i] = result.maturity
+          
+          if result.maturity == 7 then
+            parentsGrown = true
+          else
+            parentsGrown = false
             break
           end
         end
       end
     end
-
-    if parentsGrown == true and childGrown == true then
-      break
-    end
-        
+    
     moveLocation(seedScan)
     os.sleep(20)
-  end
-  
-  if parentsGrown == true and childGrown == true then
-    return true
-  else
-    return false
   end
 end
 ---------------------------------------------
 
+---------------------------------------------
+function waitForChild()
+  local childGrown = false
+  local result = {}
+  
+  while childGrown == false do
+    if lowEnergy() then
+      getEnergy()
+    end
+    
+    moveLocation(crops[5])
+    result = analyzeBlock()
+      
+    if result.name == "AgriCraft:crops" then
+      maturity = result.metadata
+
+      if maturity ~= 0 then
+        if useRake() then
+          if searchSeeds() == "seed" then
+            childGrown = true
+            break
+          end
+        end
+      end
+    end
+    
+    moveLocation(seedScan)
+    os.sleep(20)
+  end
+end
 ---------------------------------------------
 function plantStartingSeeds()
   analyzeSeeds(4)
@@ -631,7 +627,7 @@ function main()
     return
   end
       
-  waitForGrowth("parent")
+  waitForParents()
   
   print("Starting Positions set. Entering main loop")
   while maxSeedLevel ~= 30 do
@@ -648,7 +644,7 @@ function main()
     moveLocation(crops[5])
     placeSticks()
     placeCross()
-    waitForGrowth("child")
+    waitForChild()
     
     -- scan new child
     print("Child crop grown. Scanning for seed level.")
@@ -666,7 +662,7 @@ function main()
       storeCrops()
     end
     
-    waitForGrowth("parent")
+    waitForParents()
   end
 end
 ---------------------------------------------
