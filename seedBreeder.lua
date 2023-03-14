@@ -398,11 +398,10 @@ function calculateLevels()
   local scanResults = {name = "", level = 0, maturity = 0}
   
   seedScan = analyzeBlock()
-  statStrength = seed.strength
-  statGrowth = seed.growth
-  statGain = seed.gain
-print("current seed is "..statStrength..", "..
-    statGrowth..", "..statGain)
+  statStrength = seedScan.strength
+  statGrowth = seedScan.growth
+  statGain = seedScan.gain
+
   scanResults.name = seedScan.name
   scanResults.level = statStrength + statGrowth + statGain
   scanResults.maturity = seedScan.metadata
@@ -428,7 +427,7 @@ print("seedLevels["..i.."] = "..scan.level..
 print("maxSeedLevel is "..maxSeedLevel)
     end
     
-    if scan.level < minSeedLevel then
+    if scan.level < minSeedLevel or minSeedLevel == 3 then
       minSeedLevel = scan.level
 print("minSeedLevel is "..minSeedLevel)
     end
@@ -474,11 +473,12 @@ end
 ---------------------------------------------
 function compareSeeds(newSeed)
   local lowestSeedNum = -1
+  local scan
   
   for i = 1,4,1 do
     moveLocation(i)
-    local scan = calculateLevels()
-    
+    --scan = calculateLevels()
+        
     if seedLevels[i] <= minSeedLevel then
       minSeedLevel = seedLevels[i]
       lowestSeedNum = i
