@@ -53,6 +53,14 @@ The following robot slots are used by the program:
     breeding wheat seeds))
   - slot 16 (a sample item of the seeds being bred
     should be placed here by the player)
+
+When running the program one of the following
+two arguments must be provided on the command
+line:
+  - start (to begin a breeding cycle with fresh
+    "1/1/1" seeds)
+  - continue (to begin with existing, partially
+    developed parent seeds)
 --]]
 
 local robot = require 'robot'
