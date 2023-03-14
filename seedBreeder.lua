@@ -328,8 +328,8 @@ end
 
 ---------------------------------------------
 function breakCrop(target)
-  moveLocation(target)
-  robot.select(slots.crops)
+  --moveLocation(target)
+  --robot.select(slots.crops)
   
   if robot.swingDown() then
     return true
@@ -353,6 +353,7 @@ function useRake()
       dumpTrash()
       return false
     elseif searchSeeds() == "seed" then
+      breakCrop()
       return true
     end
   end
@@ -476,10 +477,12 @@ function compareSeeds(newSeed)
   local scan
   
   for i = 1,4,1 do
-    moveLocation(i)
+    moveLocation(crops[i])
     --scan = calculateLevels()
-        
-    if seedLevels[i] <= minSeedLevel then
+    
+print("minSeedLevel = "..minSeedLevel)
+    if seedLevels[i] < minSeedLevel or minSeedLevel == 3 then
+print("seedLevels[i] = "..seedLevels[i])
       minSeedLevel = seedLevels[i]
       lowestSeedNum = i
     end
@@ -547,7 +550,7 @@ print("entering waitForGrowth loop")
     if scope == "parent" and parentsGrown == false then
       for i = 1,4,1 do
 print("entering parent growth loop")
-        if seedGrowth[i] < 7 then
+        if seedGrowth[i] <= 7 then
           moveLocation(crops[i])
           result = calculateLevels()
         
@@ -575,6 +578,8 @@ print("crop["..i.."] maturity = "..result.maturity)
 
         if maturity ~= 0 then
           if useRake() then
+            dumpTrash()
+            dwstoreCrops()
             break
           end
         end
@@ -584,9 +589,6 @@ print("crop["..i.."] maturity = "..result.maturity)
     if parentsGrown == true and childGrown == true then
       break
     end
-    
-    dumpTrash()
-    storeCrops()
         
     moveLocation(seedScan)
     os.sleep(20)
