@@ -89,7 +89,7 @@ crops[4] = {x = 357, y = 65, z = 354} --east
 crops[5] = {x = 356, y = 65, z = 354} --center
 
 maxSeedLevel = 3
-parentsGrown = false
+parentsMaturity = 0
 seedLevels = {[1] = 3, [2] = 3, [3] = 3, 
   [4] = 3}
 seedGrowth = {[1] = 0, [2] = 0, [3] = 0, 
@@ -237,13 +237,13 @@ function compareItems(slot)
   end
 
   if itemName ~= nil then
-    if seedName == itemName then
+    if itemName == seedName then
       return "seed"
+    elseif itemName == cropName then
+      return "crop"
     elseif itemName == "minecraft:tallgrass" or
         itemName == "minecraft:double_plant" then
       return "grass"
-    elseif itemName == cropName then
-      return "crop"
     end
   end
 end
@@ -490,9 +490,7 @@ print("entering setLevels")
     seedGrowth[i] = scan.maturity
     
     if seedGrowth[i] == 7 then
-      parentsGrown = true
-    else
-      parentsGrown = false
+      parentsMaturity = parentsMaturity + 7
     end
 print("seedLevels["..i.."] = "..scan.level.. 
   " and seedGrowth["..i.."] = "..scan.maturity)
@@ -587,7 +585,7 @@ function replaceSeeds(newSeed)
         
         if placeSticks() and plantCrop() then
           seedLevels[target] = newSeed
-          parentsGrown = false
+          parentsMaturity = 0
           moveLocation(seedScan)
           return true
         end
@@ -605,7 +603,9 @@ function waitForParents()
     getEnergy()
   end
 
-  while parentsGrown == false do
+  while parentsMaturity < 28 do
+    parentsMaturity = 0
+    
     for i = 1,4,1 do
       if seedGrowth[i] <= 7 then
         moveLocation(crops[i])
@@ -616,9 +616,8 @@ function waitForParents()
           seedGrowth[i] = result.maturity
           
           if result.maturity == 7 then
-            parentsGrown = true
+            parentsMaturity = parentsMaturity + 7
           else
-            parentsGrown = false
             break
           end
         end
