@@ -110,32 +110,6 @@ if args[1] ~= nil then
   end
 end
 
-if args[2] ~= nil then
-  if args[2] == "analyzer" then
-    destination = analyzer
-  elseif args[2] == "charger" then
-    destination = charger
-  elseif args[2] == "trash" then
-    destination = trash
-  elseif args[2] == "stickStorage" then
-    destination = stickStorage
-  elseif args[2] == "cropStorage" then
-    destination = cropStorage
-  elseif args[2] == "seedScan" then
-    destination = seedScan
-  elseif args[2] == "cropSouth" then
-    destination = crops[1]
-  elseif args[2] == "cropWest" then
-    destination = crops[2]
-  elseif args[2] == "cropNorth" then
-    destination = crops[3]
-  elseif args[2] == "cropEast" then
-    destination = crops[4]
-  elseif args[2] == "cropCenter" then
-    destination = crops[5]
-  end
-end
-
 
 --###########################################
 --######### movement functions ##############
@@ -315,9 +289,7 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
-function searchSeeds()
-  --local checkName = inventory.getStackInInternalSlot(15).name
-  
+function searchSeeds()  
   for i = 3,8,1 do
     local comparison = compareItems(i)
     
@@ -396,9 +368,6 @@ end
 
 ---------------------------------------------
 function breakCrop(target)
-  --moveLocation(target)
-  --robot.select(slots.crops)
-  
   if robot.swingDown() then
     return true
   else
@@ -483,7 +452,7 @@ end
 function setLevels()
   local minSeedLevel = 0
   local scan = {}
-print("entering setLevels")
+
   for i = 1,4,1 do
     moveLocation(crops[i])
     scan = calculateLevels()
@@ -494,17 +463,10 @@ print("entering setLevels")
     if seedGrowth[i] == 7 then
       parentsMaturity = parentsMaturity + 7
     end
-print("seedLevels["..i.."] = "..scan.level.. 
-  " and seedGrowth["..i.."] = "..scan.maturity)
+
     if scan.level > maxSeedLevel then
       maxSeedLevel = scan.level
-print("maxSeedLevel is "..maxSeedLevel)
     end
-    
---[[    if scan.level < minSeedLevel or minSeedLevel == 0 then
-      minSeedLevel = scan.level
-print("minSeedLevel is "..minSeedLevel)
-    end--]]
   end
 end
 ---------------------------------------------
@@ -551,12 +513,7 @@ function compareSeeds(newSeed)
   local scan
   
   for i = 1,4,1 do
-    --moveLocation(crops[i])
-    --scan = calculateLevels()
-    
-print("minSeedLevel = "..minSeedLevel)
     if seedLevels[i] < minSeedLevel or minSeedLevel == 3 then
-print("seedLevels[i] = "..seedLevels[i])
       minSeedLevel = seedLevels[i]
       lowestSeedNum = i
     end
@@ -607,7 +564,7 @@ function waitForParents()
 
   while parentsMaturity < 28 do
     parentsMaturity = 0
-print("parentsMaturity < 28. entering waitForParents loop")
+
     for i = 1,4,1 do
       if seedGrowth[i] <= 7 then
         moveLocation(crops[i])
