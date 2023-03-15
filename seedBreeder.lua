@@ -348,11 +348,13 @@ end
 
 ---------------------------------------------
 function getEnergy()
+  local energy
+  
   moveLocation(charger)
 
   repeat
     os.sleep(5)
-    local energy = computer.energy()
+    energy = computer.energy()
   until (energy > 20000)
 
   print("Energy is full. Reserves at "..
@@ -605,7 +607,7 @@ function waitForParents()
 
   while parentsMaturity < 28 do
     parentsMaturity = 0
-    
+print("parentsMaturity < 28. entering waitForParents loop")
     for i = 1,4,1 do
       if seedGrowth[i] <= 7 then
         moveLocation(crops[i])
@@ -624,8 +626,10 @@ function waitForParents()
       end
     end
     
-    moveLocation(seedScan)
-    os.sleep(20)
+    if parentsMaturity < 28 then
+      moveLocation(seedScan)
+      os.sleep(20)
+    end
   end
 end
 ---------------------------------------------
