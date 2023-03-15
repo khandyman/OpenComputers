@@ -44,8 +44,9 @@ The following robot slots are used by the program:
     stickStorage and placed here)
   - slot 3 (crops obtained from harvesting will
     be placed here)
-  - slot 4 (seeds obtained from harvesting will
-    be placed here)
+  - slot 4 (place 4 of the seeds to be bred
+    in this slot; seeds obtained from the
+    breeding process will be placed here)
   - slot 13 (temp slot used for equipping single
     items to the robot's tool belt)
   - slot 15 (a sample crop output item should be
@@ -114,6 +115,13 @@ end
 --###########################################
 --######### movement functions ##############
 --###########################################
+--[[ this function moves the robot in a 
+     single direction
+     parameters:
+       orientation (string) = forward, 
+         back, left, right, up, down
+       distance (int) = how far to move
+--]]
 function moveDirection(orientation, distance)
   if orientation == "right" then
     robot.turnRight()
