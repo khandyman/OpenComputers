@@ -229,7 +229,7 @@ function compareItems(slot)
   local seedName = inventory.
     getStackInInternalSlot(16).name
   local cropName = inventory.
-    getStackInInernalSlot(15).name
+    getStackInInternalSlot(15).name
   
   if inventory.getStackInInternalSlot(slot) ~= nil then
     itemName = inventory.
@@ -325,7 +325,7 @@ function searchSeeds()
       return "seed"
     elseif comparison == "grass" then
       return "grass"
-    else
+    elseif comparison == "crop" then
       return "crop"
     end
   end
