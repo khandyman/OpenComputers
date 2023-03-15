@@ -591,9 +591,6 @@ function replaceSeeds(newSeed)
           moveLocation(seedScan)
           return true
         end
-    else
-      storeCrops()
-      dumpSeeds()
     end
     
     return false
@@ -724,8 +721,8 @@ function main()
     else
       print("Maximum seed level not reached. Replacing seeds.")
       replaceSeeds(newSeed)
-      dumpTrash()
       storeCrops()
+      dumpTrash()
     end
     
     waitForParents()
