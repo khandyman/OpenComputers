@@ -1,3 +1,7 @@
+--[[ 
+TODO: searchSeeds returns immediately upon a match, leaving other items unfound
+TODO: if sticks left in tool slot, need returned to normal slot
+--]]
 --[[
 This program uses OpenComputers to 
 automatically breed AgriCraft (for Minecraft 
