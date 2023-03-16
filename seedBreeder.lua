@@ -335,6 +335,8 @@ function resetInventory()
   local itemName
   local itemStack
   local continue = true
+  local toolEmpty = false
+  local swapEmpty = false
   
   robot.select(slots.swap)
   
@@ -343,8 +345,7 @@ function resetInventory()
 
     if itemStack == nil then
       inventory.equip()
-    else
-      continue = false
+      toolEmpty = true
     end
 
     if inventory.getStackInInternalSlot(slots.swap) ~= nil then
@@ -352,13 +353,16 @@ function resetInventory()
 
       if itemName == "rake" then
         robot.transferTo(slots.rake, 1)
+        swapEmpty = true
       elseif itemName == "sticks" then
         robot.transferTo(slots.sticks, count(slots.swap))
+        swapEmpty = true
       elseif itemName == "seed" then
         robot.transferTo(12, count(slots.swap))
+        swapEmpty = true
       end
     end
-  until (continue == true)
+  until (toolEmpty == true and swapEmpty == true)
   
   robot.select(slots.crops)
 end
