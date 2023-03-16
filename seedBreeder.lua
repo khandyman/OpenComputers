@@ -334,26 +334,31 @@ end
 function resetInventory()
   local itemName
   local itemStack
+  local continue = true
   
   robot.select(slots.swap)
   
-  itemStack = inventory.getStackInInernalSlot(slots.swap)
-  
-  if itemStack == nil then
-    inventory.equip()
-  end
-  
-  if inventory.getStackInInternalSlot(slots.swap) ~= nil then
-    itemName = compareItem(slots.swap)
-    
-    if itemName == "rake" then
-      robot.transferTo(slots.rake, 1)
-    elseif itemName == "sticks" then
-      robot.transferTo(slots.sticks, count(slots.swap))
-    elseif itemName == "seed" then
-      robot.transferTo(8, count(slots.swap))
+  repeat
+    itemStack = inventory.getStackInInternalSlot(slots.swap)
+
+    if itemStack == nil then
+      inventory.equip()
+    else
+      continue = false
     end
-  end
+
+    if inventory.getStackInInternalSlot(slots.swap) ~= nil then
+      itemName = compareItems(slots.swap)
+
+      if itemName == "rake" then
+        robot.transferTo(slots.rake, 1)
+      elseif itemName == "sticks" then
+        robot.transferTo(slots.sticks, count(slots.swap))
+      elseif itemName == "seed" then
+        robot.transferTo(12, count(slots.swap))
+      end
+    end
+  until (continue == true)
   
   robot.select(slots.crops)
 end
