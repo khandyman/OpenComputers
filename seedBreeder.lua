@@ -1,6 +1,3 @@
---[[ 
-TODO: if sticks left in tool slot, need returned to normal slot
---]]
 --[[
 This program uses OpenComputers to 
 automatically breed AgriCraft (for Minecraft 
@@ -267,12 +264,10 @@ end
 
 ---------------------------------------------
 function equipItem(slot)
-  curSlot = robot.select()
   robot.select(slot)
   robot.transferTo(slots.swap,1)
   robot.select(slots.swap)
   inventory.equip()
-  robot.select(curSlot)
 end
 ---------------------------------------------
 
@@ -405,6 +400,7 @@ end
 ---------------------------------------------
 function breakCrop(target)
   if robot.swingDown() then
+    resetInventory()
     return true
   else
     return false
@@ -418,6 +414,7 @@ function placeCross()
     equipItem(slots.sticks)
 
     if robot.useDown() then
+      resetInventory()
       return true
     end
   end
@@ -432,6 +429,7 @@ function placeSticks()
     equipItem(slots.sticks)
 
     if robot.useDown() then
+      resetInventory()
       return true
     end
   end
@@ -458,6 +456,8 @@ function plantCrop()
         return true
       end
     end
+    
+    resetInventory()
   end
 
   return false
@@ -506,7 +506,6 @@ function useRake()
   if robot.useDown() then
     robot.select(slots.rake)
     inventory.equip()
-    robot.select(slots.crops)
     
     if searchSlots().seeds > 0 then
       breakCrop()
