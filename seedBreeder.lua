@@ -120,8 +120,7 @@ end
      parameters:
        orientation (string) = forward, 
          back, left, right, up, down
-       distance (int) = how far to move
---]]
+       distance (int) = how far to move --]]
 function moveDirection(orientation, distance)
   if orientation == "right" then
     robot.turnRight()
@@ -151,6 +150,10 @@ function moveDirection(orientation, distance)
 end
 
 ---------------------------------------------
+--[[ this function moves the robot to a 
+     specific location
+     parameters:
+       target (table) = x,y,z coordinates --]]
 function moveLocation(target)
   local distance = {}
   local targetX = target.x
@@ -178,6 +181,13 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function rounds a float down
+     parameters:
+       coord (float) = the decimal number
+         to be rounded
+     return value:
+       coord (int) the whole number equivalent
+         of the parameter --]]
 function normalize(coord)
   if coord > 0 then
     coord = math.floor(coord)
