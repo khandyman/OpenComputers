@@ -403,13 +403,12 @@ function useRake()
     inventory.equip()
     robot.select(slots.crops)
     
-    if searchSeeds() == "grass" then
-      placeCross()
-      dumpTrash()
-      return false
-    elseif searchSeeds() == "seed" then
+    if searchSeeds() == "seed" then
       breakCrop()
       return true
+    else
+      placeCross()
+      return false
     end
   end
 end
@@ -527,11 +526,11 @@ end
 ---------------------------------------------
 function compareSeeds(newSeed)
   local lowestSeedNum = -1
-  local minSeedLevel = 3
+  local minSeedLevel = 0
   local scan
   
   for i = 1,4,1 do
-    if seedLevels[i] < minSeedLevel or minSeedLevel == 3 then
+    if seedLevels[i] < minSeedLevel or minSeedLevel == 0 then
       minSeedLevel = seedLevels[i]
       lowestSeedNum = i
     end
