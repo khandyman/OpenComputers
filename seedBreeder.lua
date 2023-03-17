@@ -251,7 +251,7 @@ end
 function dumpTrash()
   moveLocation(trash)
 
-  for i = 3,8,1 do
+  for i = 3,12,1 do
     if compareItems(i) ~= "crop" then
       robot.select(i)
       robot.dropDown()
@@ -365,7 +365,7 @@ function searchSlots()
   local comparison = ""
   local foundItems = {seeds = 0, grass = 0, crops = 0}
   
-  for i = 3,8,1 do
+  for i = 3,12,1 do
     comparison = compareItems(i)
     
     if comparison == "seed" then
@@ -385,7 +385,7 @@ end
 function storeCrops()
   moveLocation(cropStorage)
   
-  for i = 3,8,1 do
+  for i = 3,12,1 do
     if compareItems(i) == "crop" then
       robot.select(i)
       robot.dropDown()
