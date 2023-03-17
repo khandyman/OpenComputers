@@ -495,6 +495,9 @@ function replaceSeeds(newSeed)
           moveLocation(seedScan)
           return true
         end
+    else
+      print("New seed level is not greater than parents. "..
+        "Trashing new seed.")
     end
     
     return false
