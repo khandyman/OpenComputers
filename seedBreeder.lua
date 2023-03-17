@@ -264,10 +264,12 @@ end
 
 ---------------------------------------------
 function equipItem(slot)
+  local curSlot = robot.select()
   robot.select(slot)
   robot.transferTo(slots.swap,1)
   robot.select(slots.swap)
   inventory.equip()
+  robot.select(curSlot)
 end
 ---------------------------------------------
 
