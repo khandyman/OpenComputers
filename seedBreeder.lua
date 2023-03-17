@@ -25,7 +25,8 @@ recommended:
   - upgrade container (same, but for upgrades)
 
 Change the coordinate positions of the following
-tables to match your in-world locations:
+tables in the code below to match your in-world 
+locations:
   - charger (an OC charger)
   - analyzer (this is a regular AgriCraft analyzer)
   - trash (any modded trash can)
@@ -42,24 +43,25 @@ The following robot slots are used by the program:
   - slot 1 (hand rake needs to be placed here)
   - slot 2 (crop sticks will be pulled from 
     stickStorage and placed here)
-  - slot 3 (crops obtained from harvesting will
+  - slot 5 (crops obtained from harvesting will
     be placed here)
-  - slot 4 (place 4 of the seeds to be bred
+  - slot 6 (place 4 of the seeds to be bred
     in this slot; seeds obtained from the
     breeding process will be placed here)
-  - slot 13 (temp slot used for equipping single
-    items to the robot's tool belt)
-  - slot 15 (a sample crop output item should be
+  - slot 13 (a sample crop output item should be
     placed here by the player (e.g., wheat if 
     breeding wheat seeds))
-  - slot 16 (a sample item of the seeds being bred
+  - slot 14 (a sample item of the seeds being bred
     should be placed here by the player)
+  - slot 16 (temp slot used for equipping single
+    items to the robot's tool belt)
 
 When running the program one of the following
 two arguments must be provided on the command
 line:
   - start (to begin a breeding cycle with fresh
-    "1/1/1" seeds)
+    "1/1/1" seeds (or "5/5/5" seeds if bred 
+    from full strength parents))
   - continue (to begin with existing, partially
     developed parent seeds)
 --]]
