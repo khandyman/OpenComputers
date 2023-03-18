@@ -206,8 +206,17 @@ end
 --######### inventory functions #############
 --###########################################
 ---------------------------------------------
+--[[ this function compares an inventory slot
+      to a pre-defined list of item types
+     parameters:
+       slot (int) = the inventory slot
+         to be compared
+     return value:
+       itemType (string) the item type in the
+          slot provided --]]
 function compareItems(slot)
   local itemName = ""
+  local itemType = ""
   local seedItem = inventory.
     getStackInInternalSlot(slots.seedItem).name
   local cropItem = inventory.
@@ -220,36 +229,49 @@ function compareItems(slot)
 
   if itemName ~= nil then
     if itemName == seedItem then
-      return "seed"
+      itemType = "seed"
     elseif itemName == cropItem then
-      return "crop"
+      itemType = "crop"
     elseif itemName == "minecraft:tallgrass" or
         itemName == "minecraft:double_plant" then
-      return "grass"
+      itemType = "grass"
     elseif itemName == "AgriCraft:handRake" then
-      return "rake"
+      itemType = "rake"
     elseif itemName == "AgriCraft:cropsItem" then
-      return "sticks"
+      itemType = "sticks"
     else
-      return "unknown"
+      itemType = "unknown"
     end
   end
+  
+  return itemType
 end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function counts the item stack in
+      an inventory slot
+     parameters:
+       slot (int) = the inventory slot
+         to be counted
+     return value:
+       stackSize (string) the item type in the
+          slot provided --]]
 function count(slot)
   local stack = inventory.getStackInInternalSlot(slot)
+  local stackSize = 0
     
   if stack ~= nil then
-    return stack.size
-  else
-    return 0
+    stackSize = stack.size
   end
+  
+  return stackSize
 end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function searches the robot inventory
+      for grass and seeds, then deletes them --]]
 function dumpTrash()
   moveLocation(trash)
 
@@ -265,6 +287,11 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function equips a single item from
+      a given slot to the robot's tool slot
+     parameters:
+       slot (int) = the inventory slot
+         to be equipped from --]]
 function equipItem(slot)
   local curSlot = robot.select()
   robot.select(slot)
@@ -276,6 +303,9 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function moves the robot to its
+      charger and waits there until energy
+      is full --]]
 function getEnergy()
   local energy
   
@@ -292,6 +322,8 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function moves the robot to 
+      stickStorage and refills its crop sticks --]]
 function getSticks()
   moveLocation(stickStorage)
   robot.select(slots.sticks)
@@ -301,6 +333,10 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function checks the robot's energy
+      level, and if low prints a warning 
+     return value: boolean true if energy low,
+      false if not --]]
 function lowEnergy()
   local energy = computer.energy()
   
@@ -315,6 +351,10 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function checks the robot's stick
+      supply, and if low prints a warning 
+     return value: boolean true if sticks low,
+      false if not --]]
 function lowSticks()
   robot.select(slots.sticks)
   local stackSize = count(slots.sticks)
@@ -330,6 +370,8 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function puts inventory items back
+      where they belong --]]
 function resetInventory()
   local itemName
   local toolEmpty = false
@@ -363,6 +405,10 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function counts the quantity of item
+      types in the robot's middle inventory slots
+     return value: foundItems (table) the count
+      of each type of item found --]]
 function searchSlots()
   local comparison = ""
   local foundItems = {seeds = 0, grass = 0, crops = 0}
@@ -384,6 +430,9 @@ end
 ---------------------------------------------
 
 ---------------------------------------------
+--[[ this function moves the robot to crop
+      storage and places any crops in its
+      inventory into storage --]]
 function storeCrops()
   moveLocation(cropStorage)
   
