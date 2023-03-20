@@ -494,11 +494,8 @@ end
 
 ---------------------------------------------
 function plantCrop()
-  local seedSlot
-  
   if analyzeBlock().name == "AgriCraft:crops" then
-    seedSlot = searchSlots().slot
-    equipItem(seedSlot)
+    equipItem(searchSlots().slot)
 
     if robot.useDown() then
       return true
@@ -588,7 +585,7 @@ end
 ---------------------------------------------
 function analyzeSeeds(quantity)
   moveLocation(analyzer)
-  robot.select(slots.seeds)
+  robot.select(searchSlots().slot)
   
   if robot.dropDown(quantity) then
     os.sleep(4)
