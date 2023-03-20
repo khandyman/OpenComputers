@@ -411,12 +411,13 @@ end
       of each type of item found --]]
 function searchSlots()
   local comparison = ""
-  local foundItems = {seeds = 0, grass = 0, crops = 0}
+  local foundItems = {slot = 0, seeds = 0, grass = 0, crops = 0}
   
   for i = 3,12,1 do
     comparison = compareItems(i)
     
     if comparison == "seed" then
+      foundItems.slot = i
       foundItems.seeds = foundItems.seeds + 1
     elseif comparison == "grass" then
       foundItems.grass = foundItems.grass + 1
@@ -493,12 +494,11 @@ end
 
 ---------------------------------------------
 function plantCrop()
+  local seedSlot
+  
   if analyzeBlock().name == "AgriCraft:crops" then
-    if compareItems(slots.seeds) == "seed" then
-      equipItem(slots.seeds)
-    elseif compareItems(slots.crops) == "seed" then
-      equipItem(slots.crops)
-    end
+    seedSlot = searchSlots().slot
+    equipItem(seedSlot)
 
     if robot.useDown() then
       return true
