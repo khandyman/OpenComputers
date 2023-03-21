@@ -400,6 +400,14 @@ function resetInventory()
     end
   until (toolEmpty == true and swapEmpty == true)
   
+  for i = 3,12,1 do
+    if compareItems(i) == "seed" and i ~= 6 then
+      robot.select(i)
+      robot.transferTo(slots.seeds, 1)
+      break
+    end
+  end
+  
   robot.select(slots.crops)
 end
 ---------------------------------------------
@@ -495,16 +503,16 @@ end
 ---------------------------------------------
 function plantCrop()
   if analyzeBlock().name == "AgriCraft:crops" then
-    equipItem(searchSlots().slot)
+    equipItem(slots.seeds)
 
-    if robot.useDown() then
-      return true
-    else
+    robot.useDown()
+    robot.select(slots.swap)
+    inventory.equip()
+    
+    if inventory.getStackInInternalSlot(slots.swap) ~= nil then
       robot.swingDown()
-      
-      if robot.useDown() then
-        return true
-      end
+      inventory.equip()
+      robot.useDown()
     end
     
     resetInventory()
@@ -562,6 +570,7 @@ function useRake()
     
     if searchSlots().seeds > 0 then
       breakCrop()
+      resetInventory()
       return true
     else
       placeCross()
