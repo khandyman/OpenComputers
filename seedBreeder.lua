@@ -491,7 +491,7 @@ function placeSticks()
     equipItem(slots.sticks)
 
     if robot.useDown() then
-      resetInventory()
+      --resetInventory()
       return true
     end
   end
@@ -517,8 +517,6 @@ function plantCrop()
     
     resetInventory()
   end
-
-  return false
 end
 ---------------------------------------------
 
@@ -545,12 +543,12 @@ function replaceSeeds(newSeed)
         moveLocation(crops[target])
         robot.swingDown()
         
-        if placeSticks() and plantCrop() then
-          seedLevels[target] = newSeed
-          parentsMaturity = 0
-          moveLocation(seedScan)
-          return true
-        end
+        placeSticks()
+        plantCrop()
+        seedLevels[target] = newSeed
+        parentsMaturity = 0
+        moveLocation(seedScan)
+        return true
     else
       print("New seed level is not greater than parents. "..
         "Trashing new seed.")
