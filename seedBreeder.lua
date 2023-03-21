@@ -327,7 +327,7 @@ end
 function getSticks()
   moveLocation(stickStorage)
   robot.select(slots.sticks)
-  robot.suckDown()
+  robot.suckDown(64 - count(slots.sticks))
   robot.select(slots.crops)
 end
 ---------------------------------------------
