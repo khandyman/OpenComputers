@@ -592,7 +592,7 @@ end
 ---------------------------------------------
 function analyzeSeeds(quantity)
   moveLocation(analyzer)
-  robot.select(slots.crops)
+  robot.select(slots.seeds)
   
   if robot.dropDown(quantity) then
     os.sleep(4)
