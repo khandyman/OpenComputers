@@ -530,7 +530,7 @@ function plantStartingSeeds()
     plantCrop()
   end
   
-  moveLocation(seedScan)
+  moveLocation(charger)
 end
 ---------------------------------------------
 
@@ -547,7 +547,7 @@ function replaceSeeds(newSeed)
         plantCrop()
         seedLevels[target] = newSeed
         parentsMaturity = 0
-        moveLocation(seedScan)
+        moveLocation(charger)
         return true
     else
       print("New seed level is not greater than parents. "..
@@ -722,7 +722,7 @@ function waitForChild()
       end
     end
     
-    moveLocation(seedScan)
+    moveLocation(charger)
     os.sleep(20)
   end
 end
@@ -758,7 +758,7 @@ function waitForParents()
     end
     
     if parentsMaturity < 28 then
-      moveLocation(seedScan)
+      moveLocation(charger)
       os.sleep(20)
     end
   end
