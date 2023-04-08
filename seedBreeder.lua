@@ -723,7 +723,7 @@ function waitForChild()
     end
     
     moveLocation(charger)
-    os.sleep(20)
+    os.sleep(15)
   end
 end
 ---------------------------------------------
@@ -759,7 +759,7 @@ function waitForParents()
     
     if parentsMaturity < 28 then
       moveLocation(charger)
-      os.sleep(20)
+      os.sleep(15)
     end
   end
 end
